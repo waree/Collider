@@ -35,3 +35,17 @@ h3{margin:0 0 15px!important}
 .title{float:left;color:#434a54}
 #help span{font-size:17px}
 #wrapper{margin:0 auto;text-align:center;width:720px}
+
+.footer {
+	font-size: 1px;
+}
+.footer iframe {
+	vertical-align: middle;
+}
+.footer span {
+	display: inline-block;
+	width: 110px;
+}
+.footer .google {
+	width: 75px;
+}
