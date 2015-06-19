@@ -44,7 +44,8 @@ h3{margin:0 0 15px!important}
 }
 #footer span {
 	display: inline-block;
-	width: 110px;
+	min-width: 85px;
+  float: left;
 }
 #footer .google {
 	width: 75px;
