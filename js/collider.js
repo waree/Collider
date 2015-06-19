@@ -1,7 +1,7 @@
 (function( $ ) {
 	
 $( document ).ready(function() {
-	var htmlscale = 1; //$('html').height() / 855;
+	var htmlscale = $('html').height() / 855;
 	$('html').css('zoom', htmlscale); 
 	$('html').css('-moz-transform', htmlscale); 
 	init();
