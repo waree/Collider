@@ -40,34 +40,49 @@ var flatcolors = {
 	'purple'	:	'#AC92EC'
 }
 
-var m = new Array();
-var colorcombo = new Array();
-var sp, drain, gamestart, gameover, p;
+var m = new Array(), colorcombo = new Array();
+var sp, drain, gamestart, gameover, p, touch, scale;
 
 var downX, downY, upX, upY;
-var scale;
+var touchX = 0, touchY = 0;
+
 $("#board")
 	.on('touchmove', function(e) {
 		e.preventDefault();
 	})	
-	.on('touchstart mousedown', function(e) {
-		if (e.offsetX) {
-			downX = Math.floor(e.offsetX * scale / 60);
-			downY = Math.floor(e.offsetY * scale / 60);
-		} else if (e.layerX) {
-			downX = Math.floor(e.layerX * scale / 60);
-			downY = Math.floor(e.layerY * scale / 60);
-		}	
+	.on('touchstart', function(e) { 
+		touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+		downX = Math.floor((touch.pageX-$("#board").position().left) * scale / 60);
+		downY = Math.floor((touch.pageY-$("#board").position().top) * scale / 60);
 	})
-	.on('touchend mouseup', function(e) {
-		if (e.offsetX) {
-			upX = Math.floor(e.offsetX * scale / 60);
-			upY = Math.floor(e.offsetY * scale / 60);
-		} else if (e.layerX) {
-			upX = Math.floor(e.layerX * scale / 60);
-			upY = Math.floor(e.layerY * scale / 60);
+	.on('touchend', function(e) {
+		touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+		upX = Math.floor((touch.pageX-$("#board").position().left) * scale / 60);
+		upY = Math.floor((touch.pageY-$("#board").position().top) * scale / 60);
+		p.handleClick();
+	})
+	.on('mousedown', function(e) {
+		if (!touch) {
+			if (e.offsetX) {
+				downX = Math.floor(e.offsetX * scale / 60);
+				downY = Math.floor(e.offsetY * scale / 60);
+			} else if (e.layerX) {
+				downX = Math.floor(e.layerX * scale / 60);
+				downY = Math.floor(e.layerY * scale / 60);
+			}	
 		}
-		p.handleClick();	
+	})
+	.on('mouseup', function(e) {
+		if (!touch) {
+			if (e.offsetX) {
+				upX = Math.floor(e.offsetX * scale / 60);
+				upY = Math.floor(e.offsetY * scale / 60);
+			} else if (e.layerX) {
+				upX = Math.floor(e.layerX * scale / 60);
+				upY = Math.floor(e.layerY * scale / 60);
+			}
+			p.handleClick();	
+		}
 	});
 	
 	
