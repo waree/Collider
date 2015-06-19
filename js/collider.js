@@ -1,9 +1,10 @@
 (function( $ ) {
 	
 $( document ).ready(function() {
-	/*var htmlscale = $('html').height() / 855;
+	/*
+	var htmlscale = $('html').height() / 855;
 	$('html').css('zoom', htmlscale); 
-	$('html').css('-moz-transform', htmlscale); 
+	$('html').css('-moz-transform', htmlscale); 	
 	*/
 	init();
 });
@@ -58,13 +59,13 @@ $("#board")
 	})	
 	.on('touchstart', function(e) { 
 		touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
-		downX = Math.floor((touch.pageX-$("#board").position().left) * scale / 60);
-		downY = Math.floor((touch.pageY-$("#board").position().top) * scale / 60);
+		downX = Math.floor((touch.pageX-$("#board").offset().left) * scale / 60);
+		downY = Math.floor((touch.pageY-$("#board").offset().top) * scale / 60);
 	})
 	.on('touchend', function(e) {
 		touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
-		upX = Math.floor((touch.pageX-$("#board").position().left) * scale / 60);
-		upY = Math.floor((touch.pageY-$("#board").position().top) * scale / 60);
+		upX = Math.floor((touch.pageX-$("#board").offset().left) * scale / 60);
+		upY = Math.floor((touch.pageY-$("#board").offset().top) * scale / 60);
 		p.handleClick();
 	})
 	.on('mousedown', function(e) {
