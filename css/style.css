@@ -36,16 +36,16 @@ h3{margin:0 0 15px!important}
 #help span{font-size:17px}
 #wrapper{margin:0 auto;text-align:center;width:720px}
 
-.footer {
+#footer {
 	font-size: 1px;
 }
-.footer iframe {
+#footer iframe {
 	vertical-align: middle;
 }
-.footer span {
+#footer span {
 	display: inline-block;
 	width: 110px;
 }
-.footer .google {
+#footer .google {
 	width: 75px;
 }
