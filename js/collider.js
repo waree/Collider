@@ -47,7 +47,10 @@ var sp, drain, gamestart, gameover, p;
 var downX, downY, upX, upY;
 var scale;
 $("#board")
-	.mousedown(function(e) {
+	.on('touchmove', function(e) {
+		e.preventDefault();
+	})	
+	.on('touchstart mousedown', function(e) {
 		if (e.offsetX) {
 			downX = Math.floor(e.offsetX * scale / 60);
 			downY = Math.floor(e.offsetY * scale / 60);
@@ -56,7 +59,7 @@ $("#board")
 			downY = Math.floor(e.layerY * scale / 60);
 		}	
 	})
-	.mouseup(function(e) {
+	.on('touchend mouseup', function(e) {
 		if (e.offsetX) {
 			upX = Math.floor(e.offsetX * scale / 60);
 			upY = Math.floor(e.offsetY * scale / 60);
@@ -66,6 +69,9 @@ $("#board")
 		}
 		p.handleClick();	
 	});
+	
+	
+	
 
 function render() {
 	if (!gameover) {
