@@ -12,6 +12,14 @@
 	<link rel="stylesheet" type="text/css" href="css/style.css" /> 
   </head>
   <body>
+	<script>
+		//Twitter	
+		!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');
+	  
+		//Facebook
+		window.fbAsyncInit = function() { FB.init({ appId : '1491376754486572', xfbml : true,version : 'v2.3'}); };
+		(function(d, s, id){ var js, fjs = d.getElementsByTagName(s)[0]; if (d.getElementById(id)) {return;} js = d.createElement(s); js.id = id; js.src = "//connect.facebook.net/en_US/sdk.js"; fjs.parentNode.insertBefore(js, fjs); }(document, 'script', 'facebook-jssdk'));
+	</script>
 	<div id="wrapper">
 		<div id="newgame-popup" class="popup">
 			<h3>Game Over</h3>
@@ -43,6 +51,15 @@
 					<span>3 green: all of the balls movable again</span><br>
 				</div>
 			</div>
+			<div id="footer">
+				<div
+  class="fb-like"
+  data-share="true"
+  data-width="450"
+  data-show-faces="true">
+</div>
+				<a href="https://twitter.com/share" class="twitter-share-button" data-text="Try out this addictive logical game" data-via="waree95" data-hashtags="collider">Tweet</a>
+			</div>
 		</div>
     </div>     
     
@@ -50,4 +67,5 @@
   <script type="text/javascript" src="js/site.min.js"></script>  
   <script type="text/javascript" src="js/jquery.js"></script>
   <script type="text/javascript" src="js/collider.js"></script>
+  <script></script>
 </html>
