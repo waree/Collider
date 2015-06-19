@@ -286,19 +286,18 @@ Collider.prototype.checkNB = function (x, y) {
 		this.hp = this.hp > 100 ? 100 : this.hp;
     }
     $("#points").html(this.points);
-    $("#collected").html('Score: ' + this.points);
 }
 Collider.prototype.drawCombo = function () {
     ctxcombo.clearRect(0, 0, 400, 60);
-    for (var i = 0; i < colorcombo.length; i++) {
-        ctxcombo.beginPath();
+	ctxcombo.beginPath();
+    for (var i = 0; i < colorcombo.length; i++) {        
         ctxcombo.lineWidth = 1;
         ctxcombo.arc(30 + i * 60, 30, 25, 0, 2 * Math.PI, false);
         ctxcombo.fillStyle = flatcolors[colorcombo[i]];
-        ctxcombo.fill();
-        ctxcombo.stroke();
+        ctxcombo.fill();        
         ctxcombo.drawImage(ball, i * 60, 0, 60, 60);
     }
+	ctxcombo.stroke();
 }
 Collider.prototype.checkColorCombo = function () {
     if (colorcombo.length == 3) {
@@ -384,20 +383,15 @@ Collider.prototype.checkCombo = function () {
     }	
 }
 Collider.prototype.drawBoard = function () {
-	
-    for (var i = 2; i < this.gridSize + 3; i++) {
-        c.beginPath();
+	c.beginPath();
+    for (var i = 2; i < this.gridSize + 3; i++) {        
         c.moveTo(i * 60, 0);
         c.lineTo(i * 60, (this.gridSize + 4) * 60);
         c.strokeStyle = "black";
-        c.stroke();
-        c.beginPath();
         c.moveTo(0, i * 60);
         c.lineTo((this.gridSize + 4) * 60, i * 60);
-        c.strokeStyle = "black";
-        c.stroke();
+        c.strokeStyle = "black";       
     }
-    c.beginPath();
     c.rect(120, 120, this.gridSize * 60, this.gridSize * 60);
     c.lineWidth = 3;
     c.strokeStyle = 'black';
@@ -587,7 +581,7 @@ Ball.prototype.move = function () {
     switch (this.d) {		
 		case "left":
 			if (this.cx > this.dx) {
-				this.cx -= p.speed;
+				this.cx = this.cx - p.speed > this.dx ? this.cx - p.speed : this.dx;
 			} else {		
 				m[x][y].color = this.color;
 				m[x][y].cx = this.dx;
