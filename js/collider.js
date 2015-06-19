@@ -1,25 +1,20 @@
 (function( $ ) {
 	
 $( document ).ready(function() {
-	/*
-	var htmlscale = $('html').height() / 855;
-	$('html').css('zoom', htmlscale); 
-	$('html').css('-moz-transform', htmlscale); 	
-	*/
-	init();
+	ball.src = "images/ball.png";
 });
 
 $("#toggle-help").click(function() {	
 	if (help) {		
-		clearInterval(drain);
-		gamestart = 1;
+		clearInterval(drain);		
 		$("#help").hide(500);	
 		p.enaclick = true;
 	}
 	else {
+		gamestart = 1;
 		clearInterval(drain);
 		$("#help").show(500);
-		p.enaclick = false;
+		p.enaclick = false;	
 	}
 	help = !help;	
 });
@@ -36,7 +31,7 @@ combos.width = 250;
 combos.height = 60;
 
 var ball = new Image();
-ball.src = "images/ball.png";
+ball.onload = function() { init(); }
 
 var colors = ['red', 'yellow', 'blue', 'green'];
 var flatcolors = {
@@ -88,16 +83,16 @@ $("#board")
 				upX = Math.floor(e.layerX * scale / 60);
 				upY = Math.floor(e.layerY * scale / 60);
 			}
-			p.handleClick();	
+			p.handleClick();			
 		}
 	});
 	
 function render() {
-	if (!gameover) {
-		window.requestAnimFrame(render);
+	if (!gameover && !gamestart) {			
 		c.clearRect(0, 0, b.height, b.width);
-		p.drawBoardBalls();
-	}
+		p.drawBoardBalls();	
+		window.requestAnimFrame(render);	
+	}	
 }
 function init() {
 	p = new Collider(10);
@@ -108,13 +103,11 @@ function init() {
 	bg.width = bg.height = b.height = b.width = (p.gridSize + 4) * 60;
 	$("#hp").css("width","100%").removeClass( "progress-bar-danger progress-bar-warning" ).addClass( "progress-bar-success" );
 	scale = (p.gridSize + 4) * 60 / $("#board").height();	
-		
+			
     p.drawBoard();
     p.initBorderBalls();
 	p.initBoardBalls();
-    render();    
-	
-	
+	p.drawBoardBalls();
 }
 function rand(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
@@ -216,16 +209,15 @@ Collider.prototype.checkGameOver = function () {
     if (t == 0) this.GameOver();
 }
 Collider.prototype.drawBoardBalls = function () {
-    var i, j;
-    for (i = 0; i < this.gridSize + 4; i++) {
-        for (j = 0; j < this.gridSize + 4; j++) {
-            if (m[i][j].color != 'transparent') {
-                m[i][j].shrink(i, j);
-                m[i][j].move();
-                m[i][j].draw();
-            }
-        }
-    }
+	for (var i = 0; i < this.gridSize + 4; i++) {
+		for (var j = 0; j < this.gridSize + 4; j++) {
+			if (m[i][j].color != 'transparent') {				
+				if (m[i][j].s) m[i][j].shrink(i, j);
+				if (m[i][j].d) m[i][j].move();
+				m[i][j].draw();
+			}
+		}
+	}
 }
 Collider.prototype.initBorderBalls = function () {
     var i, j;
@@ -407,18 +399,17 @@ Collider.prototype.drawBoard = function () {
     cbg.stroke();
 }
 Collider.prototype.handleClick = function () {
-	
-	if (gamestart) {
+	if (gamestart && this.enaclick) {
 		drain = setInterval(hpDrain, 1000);
 		gamestart = 0;
+		render();
 	}
 	
-    var i;
     if (this.enaclick) {
-		
-	
+		var i;	
 		//Játékmezőn
 		if (downY > 1 && downY < this.gridSize + 2 && downX > 1 && downX < this.gridSize + 2) {
+			
 			/*
 				downX < upX && downY == upY		//Jobb				
 				downX > upX && downY == upY		//Bal
@@ -558,7 +549,7 @@ function Ball() {
     this.dy = 0;
 }
 Ball.prototype.draw = function () {
-    if (this.r >= 3) {
+    if (this.r > 3) {
         c.beginPath();
         c.lineWidth = 1;
         c.arc(this.cx, this.cy, this.r-3, 0, 2 * Math.PI, false);
@@ -573,14 +564,14 @@ Ball.prototype.set = function (color, cx, cy) {
     this.cx = cx
     this.cy = cy;
 }
-Ball.prototype.shrink = function (x, y) {
+Ball.prototype.shrink = function (x, y) {	
     if (this.s) {
         this.enaclick = false;
         if (this.r > 3) {
             this.r -= 4;
         } else {
 			this.r = 3;
-            p.checkNB(x, y);
+            p.checkNB(x, y);		
         }
     }
 }
@@ -609,11 +600,12 @@ Ball.prototype.move = function () {
 				
 				p.enaclick = true;
 				p.checkCombo();
+				
 			}
 			break;
 		case "right":
-			if (this.cx < this.dx) {
-				this.cx += p.speed;
+			if (this.cx < this.dx) {				
+				this.cx = this.cx + p.speed < this.dx ? this.cx + p.speed : this.dx;
 			} else {				
 				m[x][y].color = this.color;
 				m[x][y].cx = this.dx;
@@ -632,11 +624,12 @@ Ball.prototype.move = function () {
 				
 				p.enaclick = true;
 				p.checkCombo();
+				
 			}
 			break;
 		case "up":
 			if (this.cy > this.dy) {
-				this.cy -= p.speed;
+				this.cy = this.cy - p.speed > this.dy ? this.cy - p.speed : this.dy;
 			} else {
 				m[x][y].color = this.color;
 				m[x][y].cx = this.dx;
@@ -655,11 +648,12 @@ Ball.prototype.move = function () {
 				
 				p.enaclick = true;
 				p.checkCombo();
+				
 			}
 			break;
 		case "down":
 			if (this.cy < this.dy) {
-				this.cy += p.speed;
+				this.cy = this.cy + p.speed < this.dy ? this.cy + p.speed : this.dy;
 			} else {
 				m[x][y].color = this.color;
 				m[x][y].cx = this.dx;
@@ -678,9 +672,11 @@ Ball.prototype.move = function () {
 				
 				p.enaclick = true;
 				p.checkCombo();
+				
 			}
 			break;
     }
+	
 }
 
 window.requestAnimFrame = (function (callback) {
