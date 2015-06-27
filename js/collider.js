@@ -230,16 +230,12 @@ Collider.prototype.initBorderBalls = function () {
     for (i = 0; i < this.gridSize; i++) {
         m[i + 2][1].set(colors[Math.floor((Math.random() * colors.length))], 30 + (i + 2) * 60, 90);
         m[i + 2][0].set(colors[Math.floor((Math.random() * colors.length))], 30 + (i + 2) * 60, 30);
-    }
-    for (i = 0; i < this.gridSize; i++) {
         m[this.gridSize + 2][i + 2].set(colors[Math.floor((Math.random() * colors.length))], 30 + (this.gridSize + 2) * 60, 30 + (i + 2) * 60);
         m[this.gridSize + 3][i + 2].set(colors[Math.floor((Math.random() * colors.length))], 30 + (this.gridSize + 3) * 60, 30 + (i + 2) * 60);
     }
     for (i = this.gridSize; i > 0; i--) {
         m[i + 1][this.gridSize + 2].set(colors[Math.floor((Math.random() * colors.length))], 30 + (i + 1) * 60, 30 + (this.gridSize + 2) * 60);
         m[i + 1][this.gridSize + 3].set(colors[Math.floor((Math.random() * colors.length))], 30 + (i + 1) * 60, 30 + (this.gridSize + 3) * 60);
-    }
-    for (i = this.gridSize; i > 0; i--) {
         m[1][i + 1].set(colors[Math.floor((Math.random() * colors.length))], 90, 30 + (i + 1) * 60);
         m[0][i + 1].set(colors[Math.floor((Math.random() * colors.length))], 30, 30 + (i + 1) * 60);
     }    
@@ -293,7 +289,6 @@ Collider.prototype.drawCombo = function () {
 		ctxcombo.stroke();	
         ctxcombo.drawImage(ball, i * 60, 0, 60, 60);
     }
-	
 }
 Collider.prototype.checkColorCombo = function () {
     if (colorcombo.length == 3) {
@@ -479,7 +474,7 @@ Collider.prototype.handleClick = function () {
 		}
 		
 		else {						
-			//Szélek
+			//Szélek	
 			
 			//Felső
 			if (upY == 1) {
