@@ -11,7 +11,7 @@ $("#toggle-help").click(function() {
 		p.enaclick = true;
 	}
 	else {
-		gamestart = 1;
+		gamestart = true;
 		clearInterval(drain);
 		$("#help").show(500);
 		p.enaclick = false;	
@@ -97,8 +97,8 @@ function render() {
 function init() {
 	p = new Collider(10);
 	
-	gamestart = 1;
-	gameover = 0;
+	gamestart = true;
+	gameover = false;
 	help = false;
 	bg.width = bg.height = b.height = b.width = (p.gridSize + 4) * 60;
 	$("#hp").css("width","100%").removeClass( "progress-bar-danger progress-bar-warning" ).addClass( "progress-bar-success" );
@@ -149,7 +149,7 @@ function Collider(gridsize) {
 }
 Collider.prototype.GameOver = function () {
 	$("#newgame-popup").show(500);
-	gameover = 1;
+	gameover = true;
     this.enaclick = false;
     clearInterval(drain);
 	window.cancelAnimationFrame(render);
@@ -167,16 +167,9 @@ Collider.prototype.spawn = function () {
     m[x][y].set(colors[Math.floor((Math.random() * colors.length))], 30 + x * 60, 30 + y * 60);
 	m[x][y].r = 30;
 	
-	this.checkCombo();	
-	this.checkGameOver();
-	this.enaclick = true;	
+	//this.checkCombo();	
 }
 
-Collider.prototype.clearField = function () {
-  for (x = 2; x <= this.gridSize + 1; x++) 
-    for (y = 2; y <= this.gridSize + 1; y++) 
-        m[x][y].color = 'transparent';                                  
-}
 Collider.prototype.checkGameOver = function () {
     var t = 0;
     //Ha üres a pálya
@@ -213,7 +206,7 @@ Collider.prototype.drawBoardBalls = function () {
 		for (var j = 0; j < this.gridSize + 4; j++) {
 			if (m[i][j].color != 'transparent') {				
 				if (m[i][j].s) m[i][j].shrink(i, j);
-				if (m[i][j].d) m[i][j].move();
+				if (m[i][j].d != "") m[i][j].move();
 				m[i][j].draw();
 			}
 		}
@@ -393,10 +386,11 @@ Collider.prototype.drawBoard = function () {
     cbg.strokeStyle = 'black';
     cbg.stroke();
 }
+
 Collider.prototype.handleClick = function () {
 	if (gamestart && this.enaclick) {
 		drain = setInterval(hpDrain, 1000);
-		gamestart = 0;
+		gamestart = false;
 		render();
 	}
 	
@@ -674,10 +668,12 @@ Ball.prototype.move = function () {
 	
 }
 
+
 window.requestAnimFrame = (function (callback) {
     return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function (callback) {
         window.setTimeout(callback, 1000 / p.fps);
     };
 })();
+
 
 }( jQuery ));
