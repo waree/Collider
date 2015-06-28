@@ -46,7 +46,7 @@ h3{margin:0 0 15px!important}
 #footer iframe {
 	vertical-align: middle;
 }
-#footer span {
+#footer div, #footer span {
 	display: inline-block;
 	min-width: 85px;
   float: left;

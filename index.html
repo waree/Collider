@@ -6,8 +6,8 @@
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no">
 	<meta name="keywords" content="collide, addictive, puzzle, logical, game, ball, shrink, collect, combo, point">
 	<meta name="description" content="Collide is an addictive logical/puzzle game. Keep your health up and use combos to boost your points.">
-	<link rel="shortcut icon" href="favicon.ico"/>
-    <link rel="bookmark" href="favicon.ico"/>
+	<link rel="shortcut icon" href="favicon.ico" />
+    <link rel="bookmark" href="favicon.ico" />
     <link rel="stylesheet" type="text/css" href="css/site.min.css">
 	<link rel="stylesheet" type="text/css" href="css/style.css" /> 
   </head>
@@ -32,44 +32,42 @@
 			<h3>Game Over</h3>
 			<button id="newgame" type="button" class="btn btn-block">New Game</button>
 		</div>
-			<div id="header">
-				<canvas id="combos"></canvas>
-				<div class="header-text-container" id="toggle-help"><span class="header-text">?</span></div> 
-				<div class="header-text-container" id="points-container"><span id="points" class="header-text">0</span></div> 				
-			</div>
-			<div id="game">			  
-				<div class="progress"><div id="hp" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div>
-				<div id="layers">
-					<canvas id="board-bg" style="z-index: 0"></canvas>     
-					<canvas id="board" style="z-index: 1"></canvas>     
-				</div>			  
-			</div> 
-			<div id="help" class="popup">
-				<h3>How to play Collider</h3>
-				<div id="help-text">
-					<span>Collect at least 3 balls in a row or in a column.</span><br><br>
-					<span>You can't shoot a ball from the borders if it can't collide with another in the board.</span><br><br>
-					<img src="images/tut1.png" alt="Tutorial 3"/><br><br>
-					<span>You can move a ball while it can collide with another in the board.</span><br><br>
-					<img src="images/tut2.png" alt="Tutorial 3"/><br><br>
-					<span>After moving it shrinks and become unmovable.</span><br><br>
-					<img src="images/tut3.png" alt="Tutorial 3"/><br><br>					
-					<span>Combos:</span><br>
-					<span>3 red: +10% life</span><br>
-					<span>3 blue: explode all blue balls</span><br>
-					<span>3 yellow: transform all outer balls to yellow</span><br>
-					<span>3 green: all of the balls movable again</span><br>
-				</div>
-			</div>		
-			<div id="footer">
-				<span class="twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Try out this addictive logical game" data-via="waree95" data-hashtags="collider">Tweet</a></span>
-				<span class="facebook"><div class="fb-like" data-href="http://waree.github.io/Collider/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false"></div></span>				
-			</div>			
+		<div id="header">
+			<canvas id="combos"></canvas>
+			<div class="header-text-container" id="toggle-help"><span class="header-text">?</span></div> 
+			<div class="header-text-container" id="points-container"><span id="points" class="header-text">0</span></div> 				
 		</div>
-    </div>     
-    
+		<div id="game">			  
+			<div class="progress"><div id="hp" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div></div>
+			<div id="layers">
+				<canvas id="board-bg" style="z-index: 0"></canvas>     
+				<canvas id="board" style="z-index: 1"></canvas>     
+			</div>			  
+		</div> 
+		<div id="help" class="popup">
+			<h3>How to play Collider</h3>
+			<div id="help-text">
+				<span>Collect at least 3 balls in a row or in a column.</span><br><br>
+				<span>You can't shoot a ball from the borders if it can't collide with another in the board.</span><br><br>
+				<img src="images/tut1.png" alt="Tutorial 3"/><br><br>
+				<span>You can move a ball while it can collide with another in the board.</span><br><br>
+				<img src="images/tut2.png" alt="Tutorial 3"/><br><br>
+				<span>After moving it shrinks and become unmovable.</span><br><br>
+				<img src="images/tut3.png" alt="Tutorial 3"/><br><br>					
+				<span>Combos:</span><br>
+				<span>3 red: +10% life</span><br>
+				<span>3 blue: explode all blue balls</span><br>
+				<span>3 yellow: transform all outer balls to yellow</span><br>
+				<span>3 green: all of the balls movable again</span><br>
+			</div>
+		</div>		
+		<div id="footer">
+			<div class="twitter"><a href="https://twitter.com/share" class="twitter-share-button" data-text="Try out this addictive logical game" data-via="waree95" data-hashtags="collider">Tweet</a></div>
+			<div class="facebook"><div class="fb-like" data-href="http://waree.github.io/Collider/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false"></div></div>						
+		</div>
+    </div>        
   </body> 
-  <script type="text/javascript" src="js/jquery.js"></script>
-  <script type="text/javascript" src="js/collider.js"></script>
+  <script type="text/javascript" src="js/jquery.js" ></script>
+  <script type="text/javascript" src="js/collider.js" ></script>
   <script></script>
 </html>
