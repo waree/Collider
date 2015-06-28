@@ -7,7 +7,6 @@
 	<meta name="keywords" content="collide, addictive, puzzle, logical, game, ball, shrink, collect, combo, point">
 	<meta name="description" content="Collide is an addictive logical/puzzle game. Keep your health up and use combos to boost your points.">
 	<link rel="shortcut icon" href="favicon.ico" />
-    <link rel="bookmark" href="favicon.ico" />
     <link rel="stylesheet" type="text/css" href="css/site.min.css">
 	<link rel="stylesheet" type="text/css" href="css/style.css" /> 
   </head>
@@ -47,17 +46,18 @@
 		<div id="help" class="popup">
 			<h3>How to play Collider</h3>
 			<div id="help-text">
-				<span>Collect at least 3 balls in a row or in a column.</span><br><br>
-				<span>You can't shoot a ball from the borders if it can't collide with another in the board.</span><br><br>
+				<span>Keep your health up and get points by collecting at least 3 balls in a row or in a column.</span><br><br>
+				<span>Shoot balls from the inner borders! (It must collide with another in the board.)</span><br><br>
 				<img src="images/tut1.png" alt="Tutorial 3"/><br><br>
-				<span>You can move a ball while it can collide with another in the board.</span><br><br>
+				<span>You can move a ball while it's normal sized or it can collide with another in the board.</span><br><br>
 				<img src="images/tut2.png" alt="Tutorial 3"/><br><br>
-				<span>After moving it shrinks and become unmovable.</span><br><br>
-				<img src="images/tut3.png" alt="Tutorial 3"/><br><br>					
-				<span>Combos:</span><br>
+				<span>After moving it shrinks and become smaller and unmovable.</span><br><br>
+				<img src="images/tut3.png" alt="Tutorial 3"/><br><br>	
+				<span>By collecting rows and columns you gain combos. Collect 3 combos in the same colour to activate their effects.</span><br><br>				
+				<span>Special effects of the colours:</span><br>
 				<span>3 red: +10% life</span><br>
-				<span>3 blue: explode all blue balls</span><br>
-				<span>3 yellow: transform all outer balls to yellow</span><br>
+				<span>3 blue: clear all blue balls</span><br>
+				<span>3 yellow: transform all the outer border balls to yellow</span><br>
 				<span>3 green: all of the balls movable again</span><br>
 			</div>
 		</div>		
@@ -66,8 +66,7 @@
 			<div class="facebook"><div class="fb-like" data-href="http://waree.github.io/Collider/" data-layout="button_count" data-action="like" data-show-faces="false" data-share="false"></div></div>						
 		</div>
     </div>        
-  </body> 
-  <script type="text/javascript" src="js/jquery.js" ></script>
-  <script type="text/javascript" src="js/collider.js" ></script>
-  <script></script>
+	<script type="text/javascript" src="js/jquery.js"></script>
+	<script type="text/javascript" src="js/collider.js"></script>
+  </body>   
 </html>
