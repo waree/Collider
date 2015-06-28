@@ -1,4 +1,21 @@
-(function( $ ) {
+(function( ) {
+	
+	//RequestAnimationFrame
+    var lastTime = 0;
+    var vendors = ['ms', 'moz', 'webkit', 'o'];
+    for(var x = 0; x < vendors.length && !window.requestAnimationFrame; ++x) {
+        window.requestAnimationFrame = window[vendors[x]+'RequestAnimationFrame'];
+        window.cancelAnimationFrame = window[vendors[x]+'CancelAnimationFrame'] || window[vendors[x]+'CancelRequestAnimationFrame'];
+    }
+    if (!window.requestAnimationFrame)
+        window.requestAnimationFrame = function(callback, element) {
+            var currTime = new Date().getTime();
+            var timeToCall = Math.max(0, 16 - (currTime - lastTime));
+            var id = window.setTimeout(function() { callback(currTime + timeToCall); }, timeToCall);
+            lastTime = currTime + timeToCall;
+            return id;
+        };
+    if (!window.cancelAnimationFrame) window.cancelAnimationFrame = function(id) { clearTimeout(id); };	
 	
 $( document ).ready(function() {
 	ball.src = "images/ball.png";
@@ -88,7 +105,7 @@ function render() {
 	if (!gameover && !gamestart) {	
 		c.clearRect(0, 0, b.height, b.width);
 		p.drawBoardBalls();	
-		window.requestAnimFrame(render);	
+		window.requestAnimationFrame(render);	
 	}	
 }
 function init() {
@@ -649,20 +666,4 @@ Ball.prototype.move = function () {
     }
 	
 }
-
-window.requestAnimFrame = 
-	window.requestAnimationFrame || 
-	window.webkitRequestAnimationFrame || 
-	window.mozRequestAnimationFrame || 
-	window.oRequestAnimationFrame || 
-	window.msRequestAnimationFrame || 
-	function( callback ){ window.setTimeout(callback, 1000 / p.fps); };
-	
-window.cancelAnimationFrame = 	
-	window.cancelAnimationFrame || 
-	window.webkitRequestAnimationFrame || 
-	window.mozCancelAnimationFrame || 
-	window.oCancelAnimationFrame || 
-	window.msCancelAnimationFrame;
-
-}( jQuery ));
+}());
