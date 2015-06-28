@@ -141,7 +141,7 @@ function Collider(gridsize) {
     this.combo = 0;
     this.enaclick = true;
     this.speed = gridsize + 5;
-    this.fps = 30;
+    this.fps = 60;
 }
 Collider.prototype.GameOver = function () {
 	$("#newgame-popup").show(500);
@@ -650,10 +650,19 @@ Ball.prototype.move = function () {
 	
 }
 
-window.requestAnimFrame = (function (callback) {
-    return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function (callback) {
-        window.setTimeout(callback, 1000 / p.fps);
-    };
-})();
+window.requestAnimFrame = 
+	window.requestAnimationFrame || 
+	window.webkitRequestAnimationFrame || 
+	window.mozRequestAnimationFrame || 
+	window.oRequestAnimationFrame || 
+	window.msRequestAnimationFrame || 
+	function( callback ){ window.setTimeout(callback, 1000 / p.fps); };
+	
+window.cancelAnimationFrame = 	
+	window.cancelAnimationFrame || 
+	window.webkitRequestAnimationFrame || 
+	window.mozCancelAnimationFrame || 
+	window.oCancelAnimationFrame || 
+	window.msCancelAnimationFrame;
 
 }( jQuery ));
