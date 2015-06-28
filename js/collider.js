@@ -17,9 +17,31 @@
         };
     if (!window.cancelAnimationFrame) window.cancelAnimationFrame = function(id) { clearTimeout(id); };	
 	
+var b 		 =  document.getElementById('board');
+var c 		 =  b.getContext('2d');
+var bg 		 =  document.getElementById('board-bg');
+var cbg 	 =  bg.getContext('2d');
+var combos 	 =  document.getElementById('combos');
+var ctxcombo =  combos.getContext('2d');	
+	
 $(document).ready(function() {
+	$("#board").height($("#board").width());
+	$("#board-bg").height($("#board-bg").width());
+	
 	ball.src = "images/ball.png";
 	ball.onload = init;
+});
+
+$(window).on( "resize", function() {
+	$("#board").height($("#board").width());
+	$("#board-bg").height($("#board-bg").width());
+	scale = (p.gridSize + 4) * 60 / $("#board").height();
+	
+	c.clearRect(0, 0, b.height, b.width);
+	cbg.clearRect(0, 0, b.height, b.width);
+	
+	p.drawBoard();
+	p.drawBoardBalls();
 });
 
 $("#toggle-help").click(function() {	
@@ -37,12 +59,7 @@ $("#toggle-help").click(function() {
 	help = !help;	
 });
 
-var b 		 =  document.getElementById('board');
-var c 		 =  b.getContext('2d');
-var bg 		 =  document.getElementById('board-bg');
-var cbg 	 =  bg.getContext('2d');
-var combos 	 =  document.getElementById('combos');
-var ctxcombo =  combos.getContext('2d');
+
 
 combos.width = 250;
 combos.height = 60;
@@ -78,14 +95,15 @@ $("#board")
 		p.handleClick();
 	})
 	.on('mousedown', function(e) {
+		
 		if (!touch) {
 			if (e.offsetX) {
 				downX = Math.floor(e.offsetX * scale / 60);
 				downY = Math.floor(e.offsetY * scale / 60);
-			} else if (e.layerX) {
-				downX = Math.floor(e.layerX * scale / 60);
-				downY = Math.floor(e.layerY * scale / 60);
-			}	
+			} else if (e.offsetX == undefined) {	//Firefox
+				downX = Math.floor((e.pageX-$('#board').offset().left) / 60) +1;
+				downY = Math.floor((e.pageY-$('#board').offset().top) / 60);
+			}
 		}
 	})
 	.on('mouseup', function(e) {
@@ -93,9 +111,9 @@ $("#board")
 			if (e.offsetX) {
 				upX = Math.floor(e.offsetX * scale / 60);
 				upY = Math.floor(e.offsetY * scale / 60);
-			} else if (e.layerX) {
-				upX = Math.floor(e.layerX * scale / 60);
-				upY = Math.floor(e.layerY * scale / 60);
+			} else if (e.offsetX == undefined) {	//Firefox
+				upX = Math.floor((e.pageX-$('#board').offset().left) / 60);
+				upY = Math.floor((e.pageY-$('#board').offset().top) / 60);
 			}
 			p.handleClick();			
 		}
@@ -278,14 +296,12 @@ function Collider(gridsize) {
 		$("#points").html(this.points);
 	}
 	this.drawCombo = function () {
-		ctxcombo.clearRect(0, 0, 400, 60);	
-		ctxcombo.lineWidth = 1;
+		ctxcombo.clearRect(0, 0, bg.height, bg.width);	
+		ctxcombo.fillStyle = flatcolors[colorcombo[0]];
 		for (var i = 0; i < colorcombo.length; i++) {  
 			ctxcombo.beginPath();
-			ctxcombo.arc(30 + i * 60, 30, 25, 0, 2 * Math.PI, false);
-			ctxcombo.fillStyle = flatcolors[colorcombo[i]];
-			ctxcombo.fill(); 
-			ctxcombo.stroke();	
+			ctxcombo.arc(30 + i * 60, 30, 25, 0, 2 * Math.PI, false);			
+			ctxcombo.fill();
 			ctxcombo.drawImage(ball, i * 60, 0, 60, 60);
 		}
 	}
@@ -374,22 +390,18 @@ function Collider(gridsize) {
 			}
 		}	
 	}
+	
 	this.drawBoard = function () {
 		cbg.beginPath();
 		cbg.lineWidth = 1;
+		cbg.strokeStyle = "black";
 		for (var i = 2; i < this.gridSize + 3; i++) {        
 			cbg.moveTo(i * 60, 0);
 			cbg.lineTo(i * 60, (this.gridSize + 4) * 60);
-			cbg.strokeStyle = "black";
 			cbg.moveTo(0, i * 60);
-			cbg.lineTo((this.gridSize + 4) * 60, i * 60);
-			cbg.strokeStyle = "black";       
+			cbg.lineTo((this.gridSize + 4) * 60, i * 60);     
 		}
-		cbg.stroke();
-		cbg.beginPath();
 		cbg.rect(120, 120, this.gridSize * 60, this.gridSize * 60);
-		cbg.lineWidth = 2;
-		cbg.strokeStyle = 'black';
 		cbg.stroke();
 	}
 
@@ -470,54 +482,54 @@ function Collider(gridsize) {
 				//Szélek	
 				
 				//Felső
-				if (upY == 1) {
+				if (downY == 1) {
 					i = 2;
-					while (m[upX][i].color == 'transparent') {
+					while (m[downX][i].color == 'transparent') {
 						i++
 					}
 					if (i > 2 && i < this.gridSize + 2) {
-						m[upX][upY].d = "down";
-						m[upX][upY].dx = 30 + 60 * upX;
-						m[upX][upY].dy = 30 + 60 * (i - 1);
+						m[downX][downY].d = "down";
+						m[downX][downY].dx = 30 + 60 * downX;
+						m[downX][downY].dy = 30 + 60 * (i - 1);
 						this.enaclick = false;
 					}
 				}
 				//Alsó
-				if (upY == this.gridSize + 2) {
+				if (downY == this.gridSize + 2) {
 					i = this.gridSize + 1;
-					while (m[upX][i].color == 'transparent') {
+					while (m[downX][i].color == 'transparent') {
 						i--
 					}
 					if (i >= 2 && i < this.gridSize + 1) {
-						m[upX][upY].d = "up";
-						m[upX][upY].dx = 30 + 60 * upX;
-						m[upX][upY].dy = 30 + 60 * (i + 1);
+						m[downX][downY].d = "up";
+						m[downX][downY].dx = 30 + 60 * downX;
+						m[downX][downY].dy = 30 + 60 * (i + 1);
 						this.enaclick = false;
 					}
 				}
 				//Bal
-				if (upX == 1) {
+				if (downX == 1) {
 					i = 2;
-					while (m[i][upY].color == 'transparent') {
+					while (m[i][downY].color == 'transparent') {
 						i++
 					}
 					if (i > 2 && i < this.gridSize + 2) {
-						m[upX][upY].d = "right";
-						m[upX][upY].dx = 30 + 60 * (i - 1);
-						m[upX][upY].dy = 30 + 60 * upY;
+						m[downX][downY].d = "right";
+						m[downX][downY].dx = 30 + 60 * (i - 1);
+						m[downX][downY].dy = 30 + 60 * downY;
 						this.enaclick = false;
 					}
 				}
 				//Jobb
-				if (upX == this.gridSize + 2) {
+				if (downX == this.gridSize + 2) {
 					i = this.gridSize + 1;
-					while (m[i][upY].color == 'transparent') {
+					while (m[i][downY].color == 'transparent') {
 						i--
 					}
 					if (i >= 2 && i < this.gridSize + 1) {
-						m[upX][upY].d = "left";
-						m[upX][upY].dx = 30 + 60 * (i + 1);
-						m[upX][upY].dy = 30 + 60 * upY;
+						m[downX][downY].d = "left";
+						m[downX][downY].dx = 30 + 60 * (i + 1);
+						m[downX][downY].dy = 30 + 60 * downY;
 						this.enaclick = false;
 					}
 				}
@@ -540,11 +552,9 @@ function Ball() {
 Ball.prototype.draw = function () {
     if (this.r > 3) {
         c.beginPath();
-        c.lineWidth = 1;
         c.arc(this.cx, this.cy, this.r-3, 0, 2 * Math.PI, false);
         c.fillStyle = flatcolors[this.color];
         c.fill();
-        c.stroke();
         c.drawImage(ball, this.cx - this.r, this.cy - this.r, this.r * 2, this.r * 2);
     }
 }
