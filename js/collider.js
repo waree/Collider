@@ -84,8 +84,24 @@ $("#board")
 		}
 	});
 	
+var lastCalledTime;
+var fps;	
+	
 function render() {
-	if (!gameover && !gamestart) {			
+	if (!gameover && !gamestart) {	
+		if(!lastCalledTime) {
+			 lastCalledTime = Date.now();
+			 fps = 0;
+			 window.requestAnimFrame(render);
+			 return;
+		  }
+		  
+		 delta = (new Date().getTime() - lastCalledTime)/1000;
+		  lastCalledTime = Date.now();
+		  fps = 1/delta; 
+		  
+		 $("#points").html(Math.floor(fps));
+	
 		c.clearRect(0, 0, b.height, b.width);
 		p.drawBoardBalls();	
 		window.requestAnimFrame(render);	
