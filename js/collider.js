@@ -2,6 +2,7 @@
 	
 $( document ).ready(function() {
 	ball.src = "images/ball.png";
+	ball.onload = init;
 });
 
 $("#toggle-help").click(function() {	
@@ -19,7 +20,6 @@ $("#toggle-help").click(function() {
 	help = !help;	
 });
 
-	
 var b 		 =  document.getElementById('board');
 var c 		 =  b.getContext('2d');
 var bg 		 =  document.getElementById('board-bg');
@@ -30,9 +30,6 @@ var ctxcombo =  combos.getContext('2d');
 combos.width = 250;
 combos.height = 60;
 
-var ball = new Image();
-ball.onload = function() { init(); }
-
 var colors = ['red', 'yellow', 'blue', 'green'];
 var flatcolors = {
 	'blue'		: 	'#4A89DC',
@@ -42,10 +39,9 @@ var flatcolors = {
 	'purple'	:	'#AC92EC'
 }
 
-var m = new Array(), colorcombo = new Array();
-var sp, drain, gamestart, gameover, p, touch, scale;
-
-var downX, downY, upX, upY;
+var ball = new Image();
+var m = colorcombo = new Array();
+var downX, downY, upX, upY, drain, gamestart, gameover, p, touch, scale;
 var touchX = 0, touchY = 0;
 
 $("#board")
@@ -668,12 +664,10 @@ Ball.prototype.move = function () {
 	
 }
 
-
 window.requestAnimFrame = (function (callback) {
     return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function (callback) {
         window.setTimeout(callback, 1000 / p.fps);
     };
 })();
-
 
 }( jQuery ));
