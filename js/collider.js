@@ -40,7 +40,8 @@ var flatcolors = {
 }
 
 var ball = new Image();
-var m = colorcombo = new Array();
+var m = new Array();
+var colorcombo = new Array();
 var downX, downY, upX, upY, drain, gamestart, gameover, p, touch, scale;
 var touchX = 0, touchY = 0;
 
