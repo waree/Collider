@@ -111,15 +111,14 @@ function rand(min, max) {
 function hpDrain() {
     if (p.hp > 0) {
         p.hp -= 1 + 0.5 * Math.floor(p.points / 5000);
-        $("#hp").attr("aria-valuenow",p.hp);
 		$("#hp").css("width",p.hp+"%");
-        if (p.hp <= 30) {			
+        if (p.hp <= 30 && $("#hp").hasClass("progress-bar-danger")) {			
             $("#hp").removeClass( "progress-bar-warning progress-bar-success" ).addClass( "progress-bar-danger" );
         } 
-		else if (p.hp > 30 && p.hp < 60) {
+		else if (p.hp > 30 && p.hp <= 60 && $("#hp").hasClass("progress-bar-warning")) {
             $("#hp").removeClass( "progress-bar-danger progress-bar-success" ).addClass( "progress-bar-warning" );
         }
-		else {
+		else if (p.hp > 60 && $("#hp").hasClass("progress-bar-success")) {
 			$("#hp").removeClass( "progress-bar-danger progress-bar-warning" ).addClass( "progress-bar-success" );
 		}
     } else {
@@ -163,19 +162,18 @@ Collider.prototype.spawn = function () {
     m[x][y].set(colors[Math.floor((Math.random() * colors.length))], 30 + x * 60, 30 + y * 60);
 	m[x][y].r = 30;
 	
-	//this.checkCombo();	
+	this.checkCombo();	
 }
 
 Collider.prototype.checkGameOver = function () {
-    var t = 0;
+    var i,j,t = 0;
+
     //Ha üres a pálya
-    for (x = 2; x <= this.gridSize + 1; x++) {
-        for (y = 2; y <= this.gridSize + 1; y++) {
-            if (m[x][y].color == 'transparent') {
+    for (i = 2; i <= this.gridSize + 1; i++)
+        for (j = 2; j <= this.gridSize + 1; j++)
+            if (m[i][j].color == 'transparent')
                 t++;
-            }
-        }
-    }
+                       
     if (t == this.gridSize * this.gridSize) {
         this.points += this.hp * 100;
         this.initBoardBalls();
@@ -183,17 +181,11 @@ Collider.prototype.checkGameOver = function () {
 	
     //Ha nincs több lehetőség  
     t = 0;
-    for (var x = 2; x < this.gridSize + 1; x++) {
-        if (m[x][2].color == 'transparent')
-            t++;        
-        if (m[x][this.gridSize + 1].color == 'transparent')
-            t++;       
-    }
-    for (var y = 2; y < this.gridSize + 1; y++) {
-        if (m[2][y].color == 'transparent')
-            t++;        
-        if (m[this.gridSize + 1][y].color == 'transparent') 
-            t++;        
+    for (i = 2; i < this.gridSize + 1; i++) {
+        if (m[i][2].color == 'transparent') t++;        
+        if (m[i][this.gridSize + 1].color == 'transparent') t++;     
+		if (m[2][i].color == 'transparent') t++;        
+        if (m[this.gridSize + 1][i].color == 'transparent') t++;   	
     }
     if (t == 0) this.GameOver();
 }
@@ -394,13 +386,6 @@ Collider.prototype.handleClick = function () {
 		var i;	
 		//Játékmezőn
 		if (downY > 1 && downY < this.gridSize + 2 && downX > 1 && downX < this.gridSize + 2) {
-			
-			/*
-				downX < upX && downY == upY		//Jobb				
-				downX > upX && downY == upY		//Bal
-				downX == upX && downY < upY		//Le
-				downX == upX && downY > upY		//Fel
-			*/
 			
 			//Fel
 			if (downX == upX && downY > upY && m[downX][downY].r == 30 && m[downX][downY - 1].color == 'transparent') {
