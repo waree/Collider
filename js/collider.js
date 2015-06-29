@@ -253,26 +253,10 @@ function Collider(gridsize) {
 		var color = m[x][y].color;
 		m[x][y].color = 'transparent';
 		m[x][y].s = false;
-		if (y > 2) {
-			if (m[x][y - 1].color == color) {
-				m[x][y - 1].s = true;
-			}
-		}
-		if (y < this.gridSize + 1) {
-			if (m[x][y + 1].color == color) {
-				m[x][y + 1].s = true;
-			}
-		}
-		if (x > 2) {
-			if (m[x - 1][y].color == color) {
-				m[x - 1][y].s = true;
-			}
-		}
-		if (x < this.gridSize + 1) {
-			if (m[x + 1][y].color == color) {
-				m[x + 1][y].s = true;
-			}
-		}
+		if (y > 2 && m[x][y - 1].color == color) m[x][y - 1].s = true;
+		if (y < this.gridSize + 1 && m[x][y + 1].color == color) m[x][y + 1].s = true;
+		if (x > 2 && m[x - 1][y].color == color) m[x - 1][y].s = true;
+		if (x < this.gridSize + 1 && m[x + 1][y].color == color) m[x + 1][y].s = true;
 		this.combo++;
 		if (this.combo >= 3) {
 			this.points += 100 + (this.combo - 3) * 50;
