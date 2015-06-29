@@ -15,9 +15,9 @@ html,body{-khtml-user-select:none;-moz-user-select:none;-ms-user-select:none;-we
 span{font-family:"Open Sans Condensed",sans-serif}
 #game canvas{border:3px solid #000;height:720px;margin:0 auto;width:100%;max-width:720px;position: absolute; left: 0; top: 0;}
 #collected{display:inline-block;font-size:25px;margin:0 5px;vertical-align:middle}
-#combos{height:60px;width:250px;float:left}
+#combos{height:60px;width:210px;float:left}
 #game{display:inline-block;width:100%;max-width:720px;}
-#layers {position:relative;width: 100%;height:720px;}
+#layers {position:relative;width: 100%;}
 .progress{margin:5px 0!important}
 #header{display:block;height:60px;margin-top:20px;vertical-align:middle}
 #hp{width:100%;-webkit-transition:width 1s ease-in-out;-moz-transition:width 1s ease-in-out;-o-transition:width 1s ease-in-out;transition:width .5s ease-in-out}
@@ -26,7 +26,7 @@ span{font-family:"Open Sans Condensed",sans-serif}
 .header-text-container{background:#434a54;border-radius:10px;display:inline-block;float:right;min-width:60px;padding:5px 10px;text-align:center;vertical-align:middle;margin-left:2px;cursor:pointer}
 #points-container{min-width:100px}
 #newgame-popup{display:none;margin-top:-55px}
-#help{margin-top:-320px;display:none}
+#help{margin-top:-320px;display:none;}
 #help-text{padding:10px;text-align:justify;line-height:18px}
 #help-text img{width:100%}
 #footer{text-align:left}
