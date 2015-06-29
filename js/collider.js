@@ -117,7 +117,7 @@ function render() {
 	}
 }
 function init() {
-	p = $("#board").width() < 600 ? new Collider(7) : new Collider(10);
+	p = new Collider($("#board").width() < 400 ? 7 : 10);
 
 	gamestart = true;
 	gameover = false;
@@ -419,7 +419,7 @@ function Collider(gridsize) {
 				}
 
 				//Le
-				if (downX == upX && downY < upY && m[downX][downY].r == 30 && m[downX][downY + 1].color == 'transparent') {
+				else if (downX == upX && downY < upY && m[downX][downY].r == 30 && m[downX][downY + 1].color == 'transparent') {
 					i = downY + 1;
 					while (m[downX][i].color == 'transparent') {
 						i++
@@ -434,7 +434,7 @@ function Collider(gridsize) {
 				}
 
 				//Jobb
-				if (downX < upX && downY == upY && m[downX][downY].r == 30 && m[downX + 1][downY].color == 'transparent') {
+				else if (downX < upX && downY == upY && m[downX][downY].r == 30 && m[downX + 1][downY].color == 'transparent') {
 					i = downX + 1;
 					while (m[i][downY].color == 'transparent') {
 						i++
@@ -449,7 +449,7 @@ function Collider(gridsize) {
 				}
 
 				//Bal
-				if (downX > upX && downY == upY  && m[downX][downY].r == 30 && m[downX - 1][downY].color == 'transparent') {
+				else if (downX > upX && downY == upY  && m[downX][downY].r == 30 && m[downX - 1][downY].color == 'transparent') {
 					i = downX - 1;
 					while (m[i][downY].color == 'transparent') {
 						i--
@@ -481,7 +481,7 @@ function Collider(gridsize) {
 					}
 				}
 				//Alsó
-				if (downY == this.gridSize + 2) {
+				else if (downY == this.gridSize + 2) {
 					i = this.gridSize + 1;
 					while (m[downX][i].color == 'transparent') {
 						i--
@@ -494,7 +494,7 @@ function Collider(gridsize) {
 					}
 				}
 				//Bal
-				if (downX == 1) {
+				else if (downX == 1) {
 					i = 2;
 					while (m[i][downY].color == 'transparent') {
 						i++
@@ -507,7 +507,7 @@ function Collider(gridsize) {
 					}
 				}
 				//Jobb
-				if (downX == this.gridSize + 2) {
+				else if (downX == this.gridSize + 2) {
 					i = this.gridSize + 1;
 					while (m[i][downY].color == 'transparent') {
 						i--
