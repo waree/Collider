@@ -117,7 +117,7 @@ function render() {
 	}
 }
 function init() {
-	p = new Collider(10);
+	p = $("#board").width() < 600 ? new Collider(7) : new Collider(10);
 
 	gamestart = true;
 	gameover = false;

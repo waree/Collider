@@ -19,7 +19,7 @@ span{font-family:"Open Sans Condensed",sans-serif}
 #game{display:inline-block;width:100%;max-width:720px;}
 #layers {position:relative;width: 100%;}
 .progress{margin:5px 0!important}
-#header{display:block;height:60px;margin-top:20px;vertical-align:middle}
+#header{display:block;margin-top:20px;vertical-align:middle}
 #hp{width:100%;-webkit-transition:width 1s ease-in-out;-moz-transition:width 1s ease-in-out;-o-transition:width 1s ease-in-out;transition:width .5s ease-in-out}
 #hp-container{border:1px solid #000;display:block;height:10px;margin:5px 0;width:724px}
 .header-text{color:#fff;font-family:"Open Sans Condensed",sans-serif;font-size:35px;font-weight:700}
@@ -56,8 +56,13 @@ h3{margin:0 0 15px!important}
 }
 
 @media only screen
-and (min-width : 1200px) and (max-width : 1400px) {
+and (max-width : 1400px) {
   #wrapper { max-width:495px; }
+	#toggle-help { display: none!important; }
+	#points-container { min-width: 85px; }
+	.header-text { font-size: 25px; padding: 5px; }
+	#combos{height:45px;width:155px;float:left}
+
 }
 
 @media only screen
