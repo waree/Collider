@@ -56,22 +56,28 @@ h3{margin:0 0 15px!important}
 }
 
 @media only screen
-and (max-width : 1400px) {
+and (max-width : 800px) {
   #wrapper { max-width:495px; }
 	#toggle-help { display: none!important; }
 	#points-container { min-width: 85px; }
 	.header-text { font-size: 25px; padding: 5px; }
 	#combos{height:45px;width:155px;float:left}
-
+	.popup { width: 280px; margin-left: -140px;}
+	#help { margin-top: -320px; top: 0; }
 }
+
+@media only screen
+and (min-width : 701px) and (max-width : 1400px) {
+	#wrapper { max-width:495px; }
+}
+
 
 @media only screen
 and (min-width : 1401px) and (max-width : 1800px) {
   #wrapper { max-width:600px; }
 }
 
-/* Large screens ----------- */
 @media only screen
-and (min-width : 1824px) {
+and (min-width : 1801px) {
   #wrapper { max-width:720px; }
 }
