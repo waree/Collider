@@ -29,10 +29,6 @@ $(document).ready(function() {
 	$("#board").height($("#board").width());
 	$("#board-bg").height($("#board-bg").width());
   $("#layers").height($("#board").width() + 6);
-
-  combos.width = 210;
-  combos.height = 60;
-
 	ball.src = "images/ball.png";
 	ball.onload = init;
 });
@@ -43,9 +39,8 @@ $(window).on( "resize", function() {
   $("#layers").height($("#board").width() + 6);
 	scale = (p.gridSize + 4) * 60 / $("#board").height();
 
-	c.clearRect(0, 0, b.height, b.width);
-	cbg.clearRect(0, 0, b.height, b.width);
-
+	p.clearBG();
+  p.clearBoard();
 	p.drawBoard();
 	p.drawBoardBalls();
 });
@@ -57,7 +52,7 @@ $("#toggle-help").click(function() {
 		p.enaclick = true;
 	}
 	else {
-		gamestart = true;
+		gamestop = true;
 		clearInterval(drain);
 		$("#help").show(500);
 		p.enaclick = false;
@@ -67,8 +62,8 @@ $("#toggle-help").click(function() {
 
 var colors = ['red', 'yellow', 'blue', 'green'];
 var flatcolors = {
-	'blue'		: 	'#4A89DC',
-	'red'		:	'#ED5565',
+	'blue'		: '#4A89DC',
+	'red'		  :	'#ED5565',
 	'yellow'	:	'#FFCE54',
 	'green'		:	'#A0D468',
 	'purple'	:	'#AC92EC'
@@ -77,8 +72,7 @@ var flatcolors = {
 var ball = new Image();
 var m = new Array();
 var colorcombo = new Array();
-var downX, downY, upX, upY, drain, gamestart, gameover, p, touch, scale;
-var touchX = 0, touchY = 0;
+var downX, downY, upX, upY, drain, gamestop, gameover, p, touch, scale;
 
 $("#board")
 	.on('touchmove', function(e) {
@@ -105,23 +99,23 @@ $("#board")
 		if (!touch) {
 				upX = Math.floor((e.pageX-$('#board').offset().left) * scale / 60);
 				upY = Math.floor((e.pageY-$('#board').offset().top) * scale / 60);
-			p.handleClick();
+			  p.handleClick();
 		}
 	});
 
 function render() {
-	if (!gameover && !gamestart) {
-		c.clearRect(0, 0, b.height, b.width);
+	if (!gameover && !gamestop) {
+		p.clearBoard();
 		p.drawBoardBalls();
 		window.requestAnimationFrame(render);
 	}
 }
 function init() {
-	p = new Collider($("#board").width() < 400 ? 7 : 10);
+	p = new Collider($("#board").width() < 400 ? 6 : 10);
+	gamestop = true;
+	gameover = help = false;
 
-	gamestart = true;
-	gameover = false;
-	help = false;
+  combos.width = 210; combos.height = 60;
 	bg.width = bg.height = b.height = b.width = (p.gridSize + 4) * 60;
 	$("#hp").css("width","100%").removeClass( "progress-bar-danger progress-bar-warning" ).addClass( "progress-bar-success" );
 	scale = (p.gridSize + 4) * 60 / $("#board").height();
@@ -156,13 +150,17 @@ $("#newgame").click(function () {
 });
 
 function Collider(gridsize) {
-    this.gridSize = gridsize;
-    this.points = 0;
-    this.hp = 100;
-    this.combo = 0;
-    this.enaclick = true;
-    this.speed = gridsize + 5;
-    this.fps = 60;
+  this.gridSize = gridsize;
+  this.points = 0;
+  this.hp = 100;
+  this.combo = 0;
+  this.enaclick = true;
+  this.speed = gridsize + 5;
+  this.fps = 60;
+
+  this.clearBG = function() { cbg.clearRect(0, 0, bg.height, bg.width); }
+
+  this.clearBoard = function() { c.clearRect(0, 0, b.height, b.width); }
 
 	this.GameOver = function () {
 		$("#newgame-popup").show(500);
@@ -174,13 +172,12 @@ function Collider(gridsize) {
 
 	this.spawn = function () {
 		this.enaclick = false;
-		var x = rand(3, this.gridSize - 2);
-		var y = rand(3, this.gridSize - 2);
-		while (m[x][y].color != 'transparent') {
-			x = rand(3, this.gridSize - 2);
-			y = rand(3, this.gridSize - 2);
+		var x = rand(3, this.gridSize);
+		var y = rand(3, this.gridSize);
+    while (m[x][y].color != 'transparent') {
+      x = rand(3, this.gridSize);
+      y = rand(3, this.gridSize);
 		}
-
 		m[x][y].set(colors[Math.floor((Math.random() * colors.length))], 30 + x * 60, 30 + y * 60);
 		m[x][y].r = 30;
 
@@ -212,16 +209,15 @@ function Collider(gridsize) {
 		if (t == 0) this.GameOver();
 	}
 	this.drawBoardBalls = function () {
-		for (var i = 0; i < this.gridSize + 4; i++) {
-			for (var j = 0; j < this.gridSize + 4; j++) {
+		for (var i = 0; i < this.gridSize + 4; i++)
+			for (var j = 0; j < this.gridSize + 4; j++)
 				if (m[i][j].color != 'transparent') {
 					if (m[i][j].s) m[i][j].shrink(i, j);
 					if (m[i][j].d != "") m[i][j].move();
 					m[i][j].draw();
 				}
-			}
-		}
 	}
+
 	this.initBorderBalls = function () {
 		var i, j;
 		for (i = 0; i < this.gridSize + 4; i++) {
@@ -243,12 +239,13 @@ function Collider(gridsize) {
 			m[0][i + 1].set(colors[Math.floor((Math.random() * colors.length))], 30, 30 + (i + 1) * 60);
 		}
 	}
+
 	this.initBoardBalls = function() {
-		for (var i = 0; i < this.gridSize; i++) {
-			this.spawn();
-		}
+		for (var i = 0; i < this.gridSize; i++)
+      this.spawn();
 		this.enaclick = true;
 	}
+
 	this.checkNB = function (x, y) {
 		var color = m[x][y].color;
 		m[x][y].color = 'transparent';
@@ -265,8 +262,9 @@ function Collider(gridsize) {
 		}
 		$("#points").html(this.points);
 	}
+
 	this.drawCombo = function () {
-		ccombo.clearRect(0, 0, bg.height, bg.width);
+		ccombo.clearRect(0, 0, combos.width, combos.height);
 		ccombo.fillStyle = flatcolors[colorcombo[0]];
 		for (var i = 0; i < colorcombo.length; i++) {
 			ccombo.beginPath();
@@ -275,6 +273,7 @@ function Collider(gridsize) {
 			ccombo.drawImage(ball, i * 60, 0, 60, 60);
 		}
 	}
+
 	this.checkColorCombo = function () {
 		if (colorcombo.length == 3) {
 			if (colorcombo[0] == colorcombo[1] && colorcombo[1] == colorcombo[2]) {
@@ -301,6 +300,7 @@ function Collider(gridsize) {
 						m[this.gridSize + 3][i].color = 'yellow';
 					}
 				}
+
 				if (colorcombo[0] == 'green') {
 					for (var x = 2; x < this.gridSize + 1; x++)
 						for (var y = 2; y < this.gridSize + 1; y++)
@@ -323,12 +323,14 @@ function Collider(gridsize) {
 			}
 		}
 	}
+
 	this.checkCombo = function () {
 		this.combo = 0;
+    var combo = 1;
+    var x,y;
 		//Vízszintes
-		for (var y = 2; y < this.gridSize + 2; y++) {
-			var combo = 1;
-			for (var x = 2; x < this.gridSize + 1; x++) {
+		for (y = 2; y < this.gridSize + 2; y++) {
+			for (x = 2; x < this.gridSize + 1; x++) {
 				if (m[x][y].color == m[x + 1][y].color && m[x][y].color != 'transparent') {
 					combo++;
 				} else {
@@ -343,9 +345,8 @@ function Collider(gridsize) {
 			}
 		}
 		//Függőleges
-		for (var x = 2; x < this.gridSize + 2; x++) {
-			var combo = 1;
-			for (var y = 2; y < this.gridSize + 1; y++) {
+		for (x = 2; x < this.gridSize + 2; x++) {
+			for (y = 2; y < this.gridSize + 1; y++) {
 				if (m[x][y].color == m[x][y + 1].color && m[x][y].color != 'transparent') {
 					combo++;
 				} else {
@@ -376,9 +377,9 @@ function Collider(gridsize) {
 	}
 
 	this.handleClick = function () {
-		if (gamestart && this.enaclick) {
+		if (gamestop && this.enaclick) {
 			drain = setInterval(hpDrain, 1000);
-			gamestart = false;
+			gamestop = false;
 			render();
 		}
 
@@ -386,13 +387,10 @@ function Collider(gridsize) {
 			var i;
 			//Játékmezőn
 			if (downY > 1 && downY < this.gridSize + 2 && downX > 1 && downX < this.gridSize + 2) {
-
-				//Fel
 				if (downX == upX && downY > upY && m[downX][downY].r == 30 && m[downX][downY - 1].color == 'transparent') {
 					i = downY - 1;
-					while (m[downX][i].color == 'transparent') {
+					while (m[downX][i].color == 'transparent')
 						i--;
-					}
 					if (i >= 2 && i < this.gridSize + 1) {
 						m[downX][downY].d = "up";
 						m[downX][downY].dx = 30 + 60 * downX;
@@ -401,13 +399,10 @@ function Collider(gridsize) {
 						this.enaclick = false;
 					}
 				}
-
-				//Le
 				else if (downX == upX && downY < upY && m[downX][downY].r == 30 && m[downX][downY + 1].color == 'transparent') {
 					i = downY + 1;
-					while (m[downX][i].color == 'transparent') {
-						i++
-					}
+					while (m[downX][i].color == 'transparent')
+						i++;
 					if (i > 2 && i < this.gridSize + 2) {
 						m[downX][downY].d = "down";
 						m[downX][downY].dx = 30 + 60 * downX;
@@ -416,13 +411,10 @@ function Collider(gridsize) {
 						this.enaclick = false;
 					}
 				}
-
-				//Jobb
 				else if (downX < upX && downY == upY && m[downX][downY].r == 30 && m[downX + 1][downY].color == 'transparent') {
 					i = downX + 1;
-					while (m[i][downY].color == 'transparent') {
-						i++
-					}
+					while (m[i][downY].color == 'transparent')
+						i++;
 					if (i > 2 && i < this.gridSize + 2) {
 						m[downX][downY].d = "right";
 						m[downX][downY].dx = 30 + 60 * (i - 1);
@@ -431,13 +423,10 @@ function Collider(gridsize) {
 						this.enaclick = false;
 					}
 				}
-
-				//Bal
 				else if (downX > upX && downY == upY  && m[downX][downY].r == 30 && m[downX - 1][downY].color == 'transparent') {
 					i = downX - 1;
-					while (m[i][downY].color == 'transparent') {
-						i--
-					}
+					while (m[i][downY].color == 'transparent')
+						i--;
 					if (i >= 2 && i < this.gridSize + 1) {
 						m[downX][downY].d = "left";
 						m[downX][downY].dx = 30 + 60 * (i + 1);
@@ -446,17 +435,13 @@ function Collider(gridsize) {
 						this.enaclick = false;
 					}
 				}
-			}
-
-			else {
+			} else {
 				//Szélek
-
-				//Felső
+        //Felső
 				if (downY == 1) {
 					i = 2;
-					while (m[downX][i].color == 'transparent') {
-						i++
-					}
+					while (m[downX][i].color == 'transparent')
+						i++;
 					if (i > 2 && i < this.gridSize + 2) {
 						m[downX][downY].d = "down";
 						m[downX][downY].dx = 30 + 60 * downX;
@@ -467,9 +452,8 @@ function Collider(gridsize) {
 				//Alsó
 				else if (downY == this.gridSize + 2) {
 					i = this.gridSize + 1;
-					while (m[downX][i].color == 'transparent') {
-						i--
-					}
+					while (m[downX][i].color == 'transparent')
+						i--;
 					if (i >= 2 && i < this.gridSize + 1) {
 						m[downX][downY].d = "up";
 						m[downX][downY].dx = 30 + 60 * downX;
@@ -480,9 +464,8 @@ function Collider(gridsize) {
 				//Bal
 				else if (downX == 1) {
 					i = 2;
-					while (m[i][downY].color == 'transparent') {
-						i++
-					}
+					while (m[i][downY].color == 'transparent')
+						i++;
 					if (i > 2 && i < this.gridSize + 2) {
 						m[downX][downY].d = "right";
 						m[downX][downY].dx = 30 + 60 * (i - 1);
@@ -493,9 +476,8 @@ function Collider(gridsize) {
 				//Jobb
 				else if (downX == this.gridSize + 2) {
 					i = this.gridSize + 1;
-					while (m[i][downY].color == 'transparent') {
-						i--
-					}
+					while (m[i][downY].color == 'transparent')
+						i--;
 					if (i >= 2 && i < this.gridSize + 1) {
 						m[downX][downY].d = "left";
 						m[downX][downY].dx = 30 + 60 * (i + 1);
@@ -537,7 +519,9 @@ Ball.prototype.shrink = function (x, y) {
     if (this.s) {
         this.enaclick = false;
         if (this.r > 3) {
-            this.r -= 4;
+            //this.r -= 4;
+            this.r = Math.floor(0.8 * this.r);
+
         } else {
 			this.r = 3;
             p.checkNB(x, y);
@@ -546,7 +530,7 @@ Ball.prototype.shrink = function (x, y) {
 }
 Ball.prototype.move = function () {
     var x = (this.dx - 30) / 60;
-	var y = (this.dy - 30) / 60;
+	  var y = (this.dy - 30) / 60;
     switch (this.d) {
 		case "left":
 			if (this.cx > this.dx) {
