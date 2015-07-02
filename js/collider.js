@@ -129,7 +129,7 @@
 
     function hpDrain() {
         if (p.hp > 0) {
-            p.hp -= 1 + 0.5 * Math.floor(p.points / 5000);
+            p.hp -= 1;
             $("#hp").css("width", p.hp + "%");
             if (p.hp <= 30 && $("#hp").hasClass("progress-bar-danger")) $("#hp").removeClass("progress-bar-warning progress-bar-success").addClass("progress-bar-danger");
             else if (p.hp > 30 && p.hp <= 60 && $("#hp").hasClass("progress-bar-warning")) $("#hp").removeClass("progress-bar-danger progress-bar-success").addClass("progress-bar-warning");
