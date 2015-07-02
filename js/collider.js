@@ -116,6 +116,7 @@
         bg.width = bg.height = b.height = b.width = (p.gridSize + 4) * 60;
         $("#hp").css("width", "100%").removeClass("progress-bar-danger progress-bar-warning").addClass("progress-bar-success");
         scale = (p.gridSize + 4) * 60 / $("#board").height();
+        colorcombo = [];
 
         p.drawBoard();
         p.initBorderBalls();
