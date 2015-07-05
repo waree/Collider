@@ -1,47 +1,45 @@
 (function() {
 
     var bg = document.getElementById('board-bg');
-    var game = document.getElementById('layers');
     var cbg = bg.getContext('2d');
     var colors = ['red', 'yellow', 'blue', 'green'];
     var flatcolors = {
         'blue': '#4A89DC',
         'red': '#ED5565',
         'yellow': '#FFCE54',
-        'green': '#A0D468',
-        'purple': '#AC92EC'
+        'green': '#A0D468'
     }
 
     var colorcombo = new Array();
-    var downX, downY, upX, upY, drain, gamestop, gameover, p, touch, scale, m, bwidth, scale;
+    var downX, downY, upX, upY, drain, gamestop, gameover, p, touch, scale, m, scale;
 
     var bc = $("#ball-container");
     var hp = $("#hp");
     var wrapper = $("#wrapper");
     var combos = $("#combos");
 
-    function gScale() {
-      var w = cbg.canvas.clientWidth;
-      bc.width(w);
-      bc.height(bc.width());
-      scale = w * (14 / (p.gridSize + 4)) / 700;
-      bc.css("transform","scale(" + scale + ")");
-      bc.css("-webkit-transform","scale(" + scale + ")");
-      bc.css("-moz-transform","scale(" + scale + ")");
-      bc.css("-ms-transform","scale(" + scale + ")");
-      bc.css("-o-transform","scale(" + scale + ")");
+    function Scale() {
+        var w = cbg.canvas.clientWidth;
+        bc.width(w);
+        bc.height(bc.width());
+        scale = w * (14 / (p.gridSize + 4)) / 700;
+        bc.css("transform", "scale(" + scale + ")");
+        bc.css("-webkit-transform", "scale(" + scale + ")");
+        bc.css("-moz-transform", "scale(" + scale + ")");
+        bc.css("-ms-transform", "scale(" + scale + ")");
+        bc.css("-o-transform", "scale(" + scale + ")");
     }
 
     $(document).ready(function() {
-      var img = new Image();
-      img.src="./images/ball.png";
-      img.onload = init();
+        var img = new Image();
+        img.src = "./images/ball.png";
+        img.onload = init();
     });
 
     $(window).on("resize", function() {
-      p.clearBG();
-      p.drawBoard();
-      gScale();
+        p.clearBG();
+        p.drawBoard();
+        Scale();
     });
 
     $("#toggle-help").click(function() {
@@ -75,7 +73,7 @@
         if (!touch && p.enaclick) {
             downX = Math.floor((e.pageX - bc.offset().left) / 50 / scale);
             downY = Math.floor((e.pageY - bc.offset().top) / 50 / scale);
-            console.log(downX,downY)
+            console.log(downX, downY)
         }
     }).on('mouseup', function(e) {
         if (!touch && p.enaclick) {
@@ -90,14 +88,13 @@
         gamestop = true;
         gameover = help = false;
         bg.width = bg.height = 700;
-        bwidth = Math.floor(bg.width / (p.gridSize + 4));
         hp.css("width", "100%").removeClass("progress-bar-danger progress-bar-warning").addClass("progress-bar-success");
         colorcombo = [];
         p.drawBoard();
         p.initBorderBalls();
         p.initBoardBalls();
         p.drawBoardBalls();
-        gScale();
+        Scale();
     }
 
     function rand(min, max) {
@@ -166,7 +163,6 @@
             this.points += this.hp * 100;
             this.hp = 100;
             this.initBoardBalls();
-            this.drawBoardBalls();
         }
 
         //Ha nincs több lehetőség
@@ -207,11 +203,13 @@
             m[1][i + 2].set(colors[Math.floor((Math.random() * colors.length))], 50, (i + 2) * 50);
             m[0][i + 2].set(colors[Math.floor((Math.random() * colors.length))], 0, (i + 2) * 50);
         }
+        this.drawBoardBalls();
     }
 
     Collider.prototype.initBoardBalls = function() {
         for (var i = 0; i < this.gridSize; i++)
             this.spawn();
+        this.drawBoardBalls();
     }
 
     Collider.prototype.checkNB = function(ball) {
@@ -335,7 +333,7 @@
             cbg.moveTo(0, Math.floor(14 / (this.gridSize + 4) * i * 50));
             cbg.lineTo(Math.floor(14 / (this.gridSize + 4) * (this.gridSize + 4) * 50), Math.floor(14 / (this.gridSize + 4) * i * 50));
         }
-        cbg.rect(Math.floor(14 / (this.gridSize + 4)*100), Math.floor(14 / (this.gridSize + 4)*100), Math.floor(14 / (this.gridSize + 4) * this.gridSize * 50), Math.floor(14 / (this.gridSize + 4) * this.gridSize * 50));
+        cbg.rect(Math.floor(14 / (this.gridSize + 4) * 100), Math.floor(14 / (this.gridSize + 4) * 100), Math.floor(14 / (this.gridSize + 4) * this.gridSize * 50), Math.floor(14 / (this.gridSize + 4) * this.gridSize * 50));
         cbg.stroke();
     }
 
