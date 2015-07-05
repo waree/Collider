@@ -1,66 +1,9 @@
 (function() {
 
-    //RequestAnimationFrame
-    var i, lastTime = 0;
-    var vendors = ['ms', 'moz', 'webkit', 'o'];
-    for (i = 0; i < vendors.length && !window.requestAnimationFrame; ++i) {
-        window.requestAnimationFrame = window[vendors[i] + 'RequestAnimationFrame'];
-        window.cancelAnimationFrame = window[vendors[i] + 'CancelAnimationFrame'] || window[vendors[i] + 'CancelRequestAnimationFrame'];
-    }
-    if (!window.requestAnimationFrame) window.requestAnimationFrame = function(callback, element) {
-        var currTime = new Date().getTime();
-        var timeToCall = Math.max(0, 16 - (currTime - lastTime));
-        var id = window.setTimeout(function() {
-            callback(currTime + timeToCall);
-        }, timeToCall);
-        lastTime = currTime + timeToCall;
-        return id;
-    };
-    if (!window.cancelAnimationFrame) window.cancelAnimationFrame = function(id) {
-        clearTimeout(id);
-    };
-
-    var b = document.getElementById('board');
+    //  var b = document.getElementById('board');
     var bg = document.getElementById('board-bg');
-    var combos = document.getElementById('combos');
-
-    var c = b.getContext('2d');
+    var game = document.getElementById('layers');
     var cbg = bg.getContext('2d');
-    var ccombo = combos.getContext('2d');
-
-    $(document).ready(function() {
-        $("#board").height($("#board").width());
-        $("#board-bg").height($("#board-bg").width());
-        $("#layers").height($("#board").width() + 6);
-        ball.src = "images/ball.png";
-        ball.onload = init;
-    });
-
-    $(window).on("resize", function() {
-        $("#board").height($("#board").width());
-        $("#board-bg").height($("#board-bg").width());
-        $("#layers").height($("#board").width() + 6);
-        scale = (p.gridSize + 4) * 60 / $("#board").height();
-
-        p.clearBG();
-        p.clearBoard();
-        p.drawBoard();
-        p.drawBoardBalls();
-    });
-
-    $("#toggle-help").click(function() {
-        if (help) {
-            $("#help").hide(500);
-            p.enaclick = true;
-        } else {
-            gamestop = true;
-            clearInterval(drain);
-            $("#help").show(500);
-            p.enaclick = false;
-        }
-        help = !help;
-    });
-
     var colors = ['red', 'yellow', 'blue', 'green'];
     var flatcolors = {
         'blue': '#4A89DC',
@@ -70,52 +13,88 @@
         'purple': '#AC92EC'
     }
 
-    var ball = new Image();
     var colorcombo = new Array();
-    var downX, downY, upX, upY, drain, gamestop, gameover, p, touch, scale, m;
+    var downX, downY, upX, upY, drain, gamestop, gameover, p, touch, scale, m, bwidth, scale;
 
-    $("#board").on('touchmove', function(e) {
+    var bc = $("#ball-container");
+    var hp = $("#hp");
+    var wrapper = $("#wrapper");
+    var combos = $("#combos");
+
+    function gScale() {
+      //$("#points").html($(window).height());
+      var w = cbg.canvas.clientWidth;
+      bc.width(w);
+      bc.height(bc.width());
+      scale = w * (14 / (p.gridSize + 4)) / 700;
+
+      bc.css("transform","scale(" + scale + ")");
+      bc.css("-webkit-transform","scale(" + scale + ")");
+      bc.css("-moz-transform","scale(" + scale + ")");
+      bc.css("-ms-transform","scale(" + scale + ")");
+      bc.css("-o-transform","scale(" + scale + ")");
+    }
+
+    $(document).ready(function() {
+      init();
+      gScale();
+    });
+
+    $(window).on("resize", function() {
+      p.clearBG();
+      p.drawBoard();
+      gScale();
+    });
+
+    $("#toggle-help").click(function() {
+        $("#help").toggleClass("show");
+        if (help) {
+            p.enaclick = true;
+        } else {
+            gamestop = true;
+            clearInterval(drain);
+            p.enaclick = false;
+        }
+        help = !help;
+    });
+
+    $("#board-bg, #ball-container, .ball").on('touchmove', function(e) {
         e.preventDefault();
     }).on('touchstart', function(e) {
-        touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
-        downX = Math.floor((touch.pageX - $("#board").offset().left) * scale / 60);
-        downY = Math.floor((touch.pageY - $("#board").offset().top) * scale / 60);
+        if (p.enaclick) {
+            touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+            downX = Math.floor((touch.pageX - bc.offset().left) / 50 / scale);
+            downY = Math.floor((touch.pageY - bc.offset().top) / 50 / scale);
+        }
     }).on('touchend', function(e) {
-        touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
-        upX = Math.floor((touch.pageX - $("#board").offset().left) * scale / 60);
-        upY = Math.floor((touch.pageY - $("#board").offset().top) * scale / 60);
-        p.handleClick();
+        if (p.enaclick) {
+            touch = e.originalEvent.touches[0] || e.originalEvent.changedTouches[0];
+            upX = Math.floor((touch.pageX - bc.offset().left) / 50 / scale);
+            upY = Math.floor((touch.pageY - bc.offset().top) / 50 / scale);
+            p.handleClick();
+        }
     }).on('mousedown', function(e) {
-        if (!touch) {
-            downX = Math.floor((e.pageX - $('#board').offset().left) * scale / 60);
-            downY = Math.floor((e.pageY - $('#board').offset().top) * scale / 60);
+        if (!touch && p.enaclick) {
+            downX = Math.floor((e.pageX - bc.offset().left) / 50 / scale);
+            downY = Math.floor((e.pageY - bc.offset().top) / 50 / scale);
+            console.log(downX,downY)
         }
     }).on('mouseup', function(e) {
-        if (!touch) {
-            upX = Math.floor((e.pageX - $('#board').offset().left) * scale / 60);
-            upY = Math.floor((e.pageY - $('#board').offset().top) * scale / 60);
+        if (!touch && p.enaclick) {
+            upX = Math.floor((e.pageX - bc.offset().left) / 50 / scale);
+            upY = Math.floor((e.pageY - bc.offset().top) / 50 / scale);
             p.handleClick();
         }
     });
 
-    function render() {
-        if (!gameover && !gamestop) {
-            p.clearBoard();
-            p.drawBoardBalls();
-            window.requestAnimationFrame(render);
-        }
-    }
-
     function init() {
-        p = new Collider($("#board").width() < 400 ? 6 : 10);
+        p = new Collider($("#board-bg").width() < 400 ? 6 : 10);
         gamestop = true;
         gameover = help = false;
 
-        combos.width = 210;
-        combos.height = 60;
-        bg.width = bg.height = b.height = b.width = (p.gridSize + 4) * 60;
-        $("#hp").css("width", "100%").removeClass("progress-bar-danger progress-bar-warning").addClass("progress-bar-success");
-        scale = (p.gridSize + 4) * 60 / $("#board").height();
+        bg.width = bg.height = 700;
+        bwidth = Math.floor(bg.width / (p.gridSize + 4));
+        hp.css("width", "100%").removeClass("progress-bar-danger progress-bar-warning").addClass("progress-bar-success");
         colorcombo = [];
 
         p.drawBoard();
@@ -131,10 +110,10 @@
     function hpDrain() {
         if (p.hp > 0) {
             p.hp -= 1;
-            $("#hp").css("width", p.hp + "%");
-            if (p.hp <= 30 && $("#hp").hasClass("progress-bar-danger")) $("#hp").removeClass("progress-bar-warning progress-bar-success").addClass("progress-bar-danger");
-            else if (p.hp > 30 && p.hp <= 60 && $("#hp").hasClass("progress-bar-warning")) $("#hp").removeClass("progress-bar-danger progress-bar-success").addClass("progress-bar-warning");
-            else if (p.hp > 60 && $("#hp").hasClass("progress-bar-success")) $("#hp").removeClass("progress-bar-danger progress-bar-warning").addClass("progress-bar-success");
+            hp.css("width", p.hp + "%");
+            if (p.hp <= 30 && hp.hasClass("progress-bar-danger")) hp.removeClass("progress-bar-warning progress-bar-success").addClass("progress-bar-danger");
+            else if (p.hp > 30 && p.hp <= 60 && hp.hasClass("progress-bar-warning")) hp.removeClass("progress-bar-danger progress-bar-success").addClass("progress-bar-warning");
+            else if (p.hp > 60 && hp.hasClass("progress-bar-success")) hp.removeClass("progress-bar-danger progress-bar-warning").addClass("progress-bar-success");
         } else {
             p.GameOver();
             return;
@@ -154,7 +133,6 @@
         this.hp = 100;
         this.combo = 0;
         this.enaclick = true;
-        this.speed = gridsize + 5;
         this.fps = 60;
     }
 
@@ -162,36 +140,28 @@
         cbg.clearRect(0, 0, bg.height, bg.width);
     }
 
-    Collider.prototype.clearBoard = function() {
-        c.clearRect(0, 0, b.height, b.width);
-    }
-
     Collider.prototype.GameOver = function() {
         $("#newgame-popup").show(500);
         gameover = true;
         this.enaclick = false;
         clearInterval(drain);
-        window.cancelAnimationFrame(render);
     }
 
     Collider.prototype.spawn = function() {
-        this.enaclick = false;
         var x = rand(3, this.gridSize);
         var y = rand(3, this.gridSize);
         while (m[x][y].color != 'transparent') {
             x = rand(3, this.gridSize);
             y = rand(3, this.gridSize);
         }
-        m[x][y].set(colors[Math.floor((Math.random() * colors.length))], 30 + x * 60, 30 + y * 60);
-        m[x][y].r = 30;
-
-        this.checkCombo();
+        m[x][y].set(colors[Math.floor((Math.random() * colors.length))], x * 50, y * 50);
+        m[x][y].r = 1;
     }
 
     Collider.prototype.checkGameOver = function() {
         var i, j, t = 0;
 
-        //Ha Ã¼res a pÃ¡lya
+        //Ha üres a pálya
         for (i = 2; i <= this.gridSize + 1; i++)
             for (j = 2; j <= this.gridSize + 1; j++)
                 if (m[i][j].color == 'transparent') t++;
@@ -202,7 +172,7 @@
             this.initBoardBalls();
         }
 
-        //Ha nincs tÃ¶bb lehetÅ�sÃ©g
+        //Ha nincs több lehetőség
         t = 0;
         for (i = 2; i < this.gridSize + 1; i++) {
             if (m[i][2].color == 'transparent') t++;
@@ -218,7 +188,6 @@
             for (var j = 0; j < this.gridSize + 4; j++)
                 if (m[i][j].color != 'transparent') {
                     if (m[i][j].s) m[i][j].shrink(i, j);
-                    if (m[i][j].d != "") m[i][j].move();
                     m[i][j].draw();
                 }
     }
@@ -233,31 +202,35 @@
             }
         }
         for (i = 0; i < this.gridSize; i++) {
-            m[i + 2][1].set(colors[Math.floor((Math.random() * colors.length))], 30 + (i + 2) * 60, 90);
-            m[i + 2][0].set(colors[Math.floor((Math.random() * colors.length))], 30 + (i + 2) * 60, 30);
-            m[i + 2][this.gridSize + 2].set(colors[Math.floor((Math.random() * colors.length))], 30 + (i + 2) * 60, 30 + (this.gridSize + 2) * 60);
-            m[i + 2][this.gridSize + 3].set(colors[Math.floor((Math.random() * colors.length))], 30 + (i + 2) * 60, 30 + (this.gridSize + 3) * 60);
-            m[this.gridSize + 2][i + 2].set(colors[Math.floor((Math.random() * colors.length))], 30 + (this.gridSize + 2) * 60, 30 + (i + 2) * 60);
-            m[this.gridSize + 3][i + 2].set(colors[Math.floor((Math.random() * colors.length))], 30 + (this.gridSize + 3) * 60, 30 + (i + 2) * 60);
-            m[1][i + 2].set(colors[Math.floor((Math.random() * colors.length))], 90, 30 + (i + 2) * 60);
-            m[0][i + 2].set(colors[Math.floor((Math.random() * colors.length))], 30, 30 + (i + 2) * 60);
+            m[i + 2][1].set(colors[Math.floor((Math.random() * colors.length))], (i + 2) * 50, 50);
+            m[i + 2][0].set(colors[Math.floor((Math.random() * colors.length))], (i + 2) * 50, 0);
+            m[i + 2][this.gridSize + 2].set(colors[Math.floor((Math.random() * colors.length))], (i + 2) * 50, (this.gridSize + 2) * 50);
+            m[i + 2][this.gridSize + 3].set(colors[Math.floor((Math.random() * colors.length))], (i + 2) * 50, (this.gridSize + 3) * 50);
+            m[this.gridSize + 2][i + 2].set(colors[Math.floor((Math.random() * colors.length))], (this.gridSize + 2) * 50, (i + 2) * 50);
+            m[this.gridSize + 3][i + 2].set(colors[Math.floor((Math.random() * colors.length))], (this.gridSize + 3) * 50, (i + 2) * 50);
+            m[1][i + 2].set(colors[Math.floor((Math.random() * colors.length))], 50, (i + 2) * 50);
+            m[0][i + 2].set(colors[Math.floor((Math.random() * colors.length))], 0, (i + 2) * 50);
         }
     }
 
     Collider.prototype.initBoardBalls = function() {
         for (var i = 0; i < this.gridSize; i++)
             this.spawn();
-        this.enaclick = true;
     }
 
-    Collider.prototype.checkNB = function(x, y) {
+    Collider.prototype.checkNB = function(ball) {
+        var x = (parseInt(ball.div.style.left) + ball.tx) / 50;
+        var y = (parseInt(ball.div.style.top) + ball.ty) / 50;
+
         var color = m[x][y].color;
         m[x][y].color = 'transparent';
-        m[x][y].s = false;
-        if (y > 2 && m[x][y - 1].color == color) m[x][y - 1].s = true;
-        if (y < this.gridSize + 1 && m[x][y + 1].color == color) m[x][y + 1].s = true;
-        if (x > 2 && m[x - 1][y].color == color) m[x - 1][y].s = true;
-        if (x < this.gridSize + 1 && m[x + 1][y].color == color) m[x + 1][y].s = true;
+        m[x][y].shrink(0);
+
+        if (y > 2 && m[x][y - 1].color == color) this.checkNB(m[x][y - 1]);
+        if (y < this.gridSize + 1 && m[x][y + 1].color == color) this.checkNB(m[x][y + 1]);
+        if (x > 2 && m[x - 1][y].color == color) this.checkNB(m[x - 1][y]);
+        if (x < this.gridSize + 1 && m[x + 1][y].color == color) this.checkNB(m[x + 1][y]);
+
         this.combo++;
         if (this.combo >= 3) {
             this.points += 100 + (this.combo - 3) * 50;
@@ -268,13 +241,10 @@
     }
 
     Collider.prototype.drawCombo = function() {
-        ccombo.clearRect(0, 0, combos.width, combos.height);
-        ccombo.fillStyle = flatcolors[colorcombo[0]];
+        var div = document.createElement('div');
+        combos.html("");
         for (var i = 0; i < colorcombo.length; i++) {
-            ccombo.beginPath();
-            ccombo.arc(30 + i * 60, 30, 25, 0, 2 * Math.PI, false);
-            ccombo.fill();
-            ccombo.drawImage(ball, i * 60, 0, 60, 60);
+            combos.append('<div class="ball ' + colorcombo[i] + '"></div>');
         }
     }
 
@@ -284,32 +254,33 @@
                 if (colorcombo[0] == 'red') this.hp = this.hp < 90 ? this.hp += 10 : this.hp = 100;
 
                 if (colorcombo[0] == 'blue') {
-                    for (var x = 2; x < this.gridSize + 1; x++) {
-                        for (var y = 2; y < this.gridSize + 1; y++) {
+                    for (var x = 2; x < this.gridSize + 1; x++)
+                        for (var y = 2; y < this.gridSize + 1; y++)
                             if (m[x][y].color == 'blue') {
                                 this.points += 100;
-                                m[x][y].s = true;
+                                m[x][y].shrink(0);
                             }
-                        }
-                    }
                     this.checkGameOver();
                 }
 
                 if (colorcombo[0] == 'yellow') {
-                    for (var i = 2; i < this.gridSize + 1; i++) {
+                    for (var i = 2; i < this.gridSize + 2; i++) {
                         m[i][0].color = 'yellow';
+                        m[i][0].div.className = "ball yellow";
                         m[i][this.gridSize + 3].color = 'yellow';
+                        m[i][this.gridSize + 3].div.className = "ball yellow";
                         m[0][i].color = 'yellow';
+                        m[0][i].div.className = "ball yellow";
                         m[this.gridSize + 3][i].color = 'yellow';
+                        m[this.gridSize + 3][i].div.className = "ball yellow";
                     }
                 }
 
                 if (colorcombo[0] == 'green') {
                     for (var x = 2; x < this.gridSize + 1; x++)
                         for (var y = 2; y < this.gridSize + 1; y++)
-                            m[x][y].r = 30;
+                            m[x][y].shrink(1);
                 }
-
                 colorcombo = [];
             } else if (colorcombo[1] != colorcombo[2]) {
                 var nc = colorcombo[2];
@@ -330,33 +301,27 @@
         this.combo = 0;
         var combo = 1;
         var x, y;
-        //VÃ­zszintes
+        //Vízszintes
         for (y = 2; y < this.gridSize + 2; y++) {
             for (x = 2; x < this.gridSize + 1; x++) {
-                if (m[x][y].color == m[x + 1][y].color && m[x][y].color != 'transparent') {
-                    combo++;
-                } else {
-                    combo = 1;
-                }
+                if (m[x][y].color == m[x + 1][y].color && m[x][y].color != 'transparent') combo++;
+                else combo = 1;
                 if (combo == 3) {
-                    m[x][y].s = true;
                     colorcombo.push(m[x][y].color);
+                    this.checkNB(m[x][y]);
                     this.checkColorCombo();
                     this.drawCombo();
                 }
             }
         }
-        //FÃ¼ggÅ�leges
+        //Függőleges
         for (x = 2; x < this.gridSize + 2; x++) {
             for (y = 2; y < this.gridSize + 1; y++) {
-                if (m[x][y].color == m[x][y + 1].color && m[x][y].color != 'transparent') {
-                    combo++;
-                } else {
-                    combo = 1;
-                }
+                if (m[x][y].color == m[x][y + 1].color && m[x][y].color != 'transparent') combo++;
+                else combo = 1;
                 if (combo == 3) {
-                    m[x][y].s = true;
                     colorcombo.push(m[x][y].color);
+                    this.checkNB(m[x][y]);
                     this.checkColorCombo();
                     this.drawCombo();
                 }
@@ -369,259 +334,197 @@
         cbg.lineWidth = 1;
         cbg.strokeStyle = "black";
         for (var i = 2; i < this.gridSize + 3; i++) {
-            cbg.moveTo(i * 60, 0);
-            cbg.lineTo(i * 60, (this.gridSize + 4) * 60);
-            cbg.moveTo(0, i * 60);
-            cbg.lineTo((this.gridSize + 4) * 60, i * 60);
+            cbg.moveTo(Math.floor(14 / (this.gridSize + 4) * i * 50), 0);
+            cbg.lineTo(Math.floor(14 / (this.gridSize + 4) * i * 50), Math.floor(14 / (this.gridSize + 4) * (this.gridSize + 4) * 50));
+            cbg.moveTo(0, Math.floor(14 / (this.gridSize + 4) * i * 50));
+            cbg.lineTo(Math.floor(14 / (this.gridSize + 4) * (this.gridSize + 4) * 50), Math.floor(14 / (this.gridSize + 4) * i * 50));
         }
-        cbg.rect(120, 120, this.gridSize * 60, this.gridSize * 60);
+        cbg.rect(Math.floor(14 / (this.gridSize + 4)*100), Math.floor(14 / (this.gridSize + 4)*100), Math.floor(14 / (this.gridSize + 4) * this.gridSize * 50), Math.floor(14 / (this.gridSize + 4) * this.gridSize * 50));
         cbg.stroke();
     }
 
     Collider.prototype.handleClick = function() {
-        if (gamestop && this.enaclick) {
+        if (gamestop) {
             drain = setInterval(hpDrain, 1000);
             gamestop = false;
-            render();
         }
-
-        if (this.enaclick) {
+        //Játékmezőn
+        if (m[downX][downY].color != 'transparent') {
             var i;
-            //JÃ¡tÃ©kmezÅ�n
             if (downY > 1 && downY < this.gridSize + 2 && downX > 1 && downX < this.gridSize + 2) {
-                if (downX == upX && downY > upY && m[downX][downY].r == 30 && m[downX][downY - 1].color == 'transparent') {
+                //Fel
+                if (downX == upX && downY > upY && m[downX][downY].r == 1 && m[downX][downY - 1].color == 'transparent') {
                     i = downY - 1;
-                    while (m[downX][i].color == 'transparent')
-                        i--;
+                    while (m[downX][i--].color == 'transparent') {}
                     if (i >= 2 && i < this.gridSize + 1) {
-                        m[downX][downY].d = "up";
-                        m[downX][downY].dx = 30 + 60 * downX;
-                        m[downX][downY].dy = 30 + 60 * (i + 1);
-                        m[downX][downY].r = 22;
                         this.enaclick = false;
+                        m[downX][downY].translate(0, -50 * (downY - i - 2));
+                        m[downX][downY].shrink(0.7);
+                        m[downX][i + 2] = m[downX][downY];
+                        m[downX][downY] = new Ball();
+                        setTimeout(function() {
+                            p.enaclick = true;
+                        }, 400);
                     }
-                } else if (downX == upX && downY < upY && m[downX][downY].r == 30 && m[downX][downY + 1].color == 'transparent') {
+                    //Le
+                } else if (downX == upX && downY < upY && m[downX][downY].r == 1 && m[downX][downY + 1].color == 'transparent') {
                     i = downY + 1;
-                    while (m[downX][i].color == 'transparent')
-                        i++;
+                    while (m[downX][i++].color == 'transparent') {}
                     if (i > 2 && i < this.gridSize + 2) {
-                        m[downX][downY].d = "down";
-                        m[downX][downY].dx = 30 + 60 * downX;
-                        m[downX][downY].dy = 30 + 60 * (i - 1);
-                        m[downX][downY].r = 22;
                         this.enaclick = false;
+                        m[downX][downY].translate(0, 50 * (i - 2 - downY));
+                        m[downX][downY].shrink(0.7);
+                        m[downX][i - 2] = m[downX][downY];
+                        m[downX][downY] = new Ball();
+                        setTimeout(function() {
+                            p.enaclick = true;
+                        }, 400);
                     }
-                } else if (downX < upX && downY == upY && m[downX][downY].r == 30 && m[downX + 1][downY].color == 'transparent') {
+                    //Jobb
+                } else if (downX < upX && downY == upY && m[downX][downY].r == 1 && m[downX + 1][downY].color == 'transparent') {
                     i = downX + 1;
-                    while (m[i][downY].color == 'transparent')
-                        i++;
+                    while (m[i++][downY].color == 'transparent') {}
                     if (i > 2 && i < this.gridSize + 2) {
-                        m[downX][downY].d = "right";
-                        m[downX][downY].dx = 30 + 60 * (i - 1);
-                        m[downX][downY].dy = 30 + 60 * downY;
-                        m[downX][downY].r = 22;
                         this.enaclick = false;
+                        m[downX][downY].translate(50 * (i - 2 - downX), 0);
+                        m[downX][downY].shrink(0.7);
+                        m[i - 2][downY] = m[downX][downY];
+                        m[downX][downY] = new Ball();
+                        setTimeout(function() {
+                            p.enaclick = true;
+                        }, 400);
                     }
-                } else if (downX > upX && downY == upY && m[downX][downY].r == 30 && m[downX - 1][downY].color == 'transparent') {
+                    //Bal
+                } else if (downX > upX && downY == upY && m[downX][downY].r == 1 && m[downX - 1][downY].color == 'transparent') {
                     i = downX - 1;
-                    while (m[i][downY].color == 'transparent')
-                        i--;
+                    while (m[i--][downY].color == 'transparent') {}
                     if (i >= 2 && i < this.gridSize + 1) {
-                        m[downX][downY].d = "left";
-                        m[downX][downY].dx = 30 + 60 * (i + 1);
-                        m[downX][downY].dy = 30 + 60 * downY;
-                        m[downX][downY].r = 22;
                         this.enaclick = false;
-                    }
-                }
-            } else {
-                //SzÃ©lek
-                //FelsÅ�
-                if (downY == 1) {
-                    i = 2;
-                    while (m[downX][i].color == 'transparent')
-                        i++;
-                    if (i > 2 && i < this.gridSize + 2) {
-                        m[downX][downY].d = "down";
-                        m[downX][downY].dx = 30 + 60 * downX;
-                        m[downX][downY].dy = 30 + 60 * (i - 1);
-                        this.enaclick = false;
-                    }
-                }
-                //AlsÃ³
-                else if (downY == this.gridSize + 2) {
-                    i = this.gridSize + 1;
-                    while (m[downX][i].color == 'transparent')
-                        i--;
-                    if (i >= 2 && i < this.gridSize + 1) {
-                        m[downX][downY].d = "up";
-                        m[downX][downY].dx = 30 + 60 * downX;
-                        m[downX][downY].dy = 30 + 60 * (i + 1);
-                        this.enaclick = false;
-                    }
-                }
-                //Bal
-                else if (downX == 1) {
-                    i = 2;
-                    while (m[i][downY].color == 'transparent')
-                        i++;
-                    if (i > 2 && i < this.gridSize + 2) {
-                        m[downX][downY].d = "right";
-                        m[downX][downY].dx = 30 + 60 * (i - 1);
-                        m[downX][downY].dy = 30 + 60 * downY;
-                        this.enaclick = false;
-                    }
-                }
-                //Jobb
-                else if (downX == this.gridSize + 2) {
-                    i = this.gridSize + 1;
-                    while (m[i][downY].color == 'transparent')
-                        i--;
-                    if (i >= 2 && i < this.gridSize + 1) {
-                        m[downX][downY].d = "left";
-                        m[downX][downY].dx = 30 + 60 * (i + 1);
-                        m[downX][downY].dy = 30 + 60 * downY;
-                        this.enaclick = false;
+                        m[downX][downY].translate(-50 * (downX - i - 2), 0);
+                        m[downX][downY].shrink(0.7);
+                        m[i + 2][downY] = m[downX][downY];
+                        m[downX][downY] = new Ball();
+                        setTimeout(function() {
+                            p.enaclick = true;
+                        }, 400);
                     }
                 }
             }
-
+            //Szélek
+            else {
+                //Felső
+                if (downY == 1 && m[downX][2].color == 'transparent') {
+                    i = 2;
+                    while (m[downX][i].color == 'transparent') i++;
+                    if (i > 2 && i < this.gridSize + 2) {
+                        this.enaclick = false;
+                        m[downX][downY].translate(0, 50 * (i - 2));
+                        m[downX][downY - 1].translate(0, 50);
+                        m[downX][i - 1] = m[downX][downY];
+                        m[downX][downY] = m[downX][downY - 1];
+                        m[downX][downY - 1] = new Ball();
+                        m[downX][downY - 1].set(colors[Math.floor((Math.random() * colors.length))], downX * 50, (downY - 1) * 50);
+                        setTimeout(function() {
+                            m[downX][downY - 1].draw();
+                            p.enaclick = true;
+                        }, 400);
+                    }
+                }
+                //Alsó
+                else if (downY == this.gridSize + 2 && m[downX][this.gridSize + 1].color == 'transparent') {
+                    i = this.gridSize + 1;
+                    while (m[downX][i].color == 'transparent') i--;
+                    if (i >= 2 && i < this.gridSize + 1) {
+                        this.enaclick = false;
+                        m[downX][downY].translate(0, -50 * (this.gridSize - (i - 1)));
+                        m[downX][downY + 1].translate(0, -50);
+                        m[downX][i + 1] = m[downX][downY];
+                        m[downX][downY] = m[downX][downY + 1];
+                        m[downX][downY + 1] = new Ball();
+                        m[downX][downY + 1].set(colors[Math.floor((Math.random() * colors.length))], downX * 50, (downY + 1) * 50);
+                        setTimeout(function() {
+                            m[downX][downY + 1].draw();
+                            p.enaclick = true;
+                        }, 400);
+                    }
+                }
+                //Bal
+                else if (downX == 1 && m[2][downY].color == 'transparent') {
+                    i = 2;
+                    while (m[i][downY].color == 'transparent') i++;
+                    if (i > 2 && i < this.gridSize + 2) {
+                        this.enaclick = false;
+                        m[downX][downY].translate(50 * (i - 2), 0);
+                        m[downX - 1][downY].translate(50, 0);
+                        m[i - 1][downY] = m[downX][downY];
+                        m[downX][downY] = m[downX - 1][downY];
+                        m[downX - 1][downY] = new Ball();
+                        m[downX - 1][downY].set(colors[Math.floor((Math.random() * colors.length))], (downX - 1) * 50, downY * 50);
+                        setTimeout(function() {
+                            m[downX - 1][downY].draw();
+                            p.enaclick = true;
+                        }, 400);
+                    }
+                }
+                //Jobb
+                else if (downX == this.gridSize + 2 && m[this.gridSize + 1][downY].color == 'transparent') {
+                    i = this.gridSize + 1;
+                    while (m[i][downY].color == 'transparent') i--;
+                    if (i >= 2 && i < this.gridSize + 1) {
+                        this.enaclick = false;
+                        m[downX][downY].translate(-50 * (this.gridSize - (i - 1)), 0);
+                        m[downX + 1][downY].translate(-50, 0);
+                        m[i + 1][downY] = m[downX][downY];
+                        m[downX][downY] = m[downX + 1][downY];
+                        m[downX + 1][downY] = new Ball();
+                        m[downX + 1][downY].set(colors[Math.floor((Math.random() * colors.length))], (downX + 1) * 50, downY * 50);
+                        setTimeout(function() {
+                            m[downX + 1][downY].draw();
+                            p.enaclick = true;
+                        }, 400);
+                    }
+                }
+            }
+            setTimeout(function() {
+                p.checkCombo();
+            }, 400);
         }
     }
-
 
     function Ball() {
+        this.div = document.createElement('div');
         this.color = 'transparent';
-        this.s = false;
-        this.r = 30;
-        this.cx = 0;
-        this.cy = 0;
-        this.d = "";
-        this.dx = 0;
-        this.dy = 0;
+        this.r = 1;
+        this.tx = 0;
+        this.ty = 0;
+    }
+    Ball.prototype.translate = function(x, y) {
+        this.tx += x;
+        this.ty += y;
+        this.div.style["-webkit-transform"] = "translate(" + this.tx + "px, " + this.ty + "px) scale(" + this.r + ")";
+        this.div.style["-moz-transform"] = "translate(" + this.tx + "px, " + this.ty + "px) scale(" + this.r + ")";
+        this.div.style["-ms-transform"] = "translate(" + this.tx + "px, " + this.ty + "px) scale(" + this.r + ")";
+        this.div.style["-o-transform"] = "translate(" + this.tx + "px, " + this.ty + "px) scale(" + this.r + ")";
+        this.div.style["transform"] = "translate(" + this.tx + "px, " + this.ty + "px) scale(" + this.r + ")";
     }
     Ball.prototype.draw = function() {
-        if (this.r > 3) {
-            c.beginPath();
-            c.arc(this.cx, this.cy, this.r - 3, 0, 2 * Math.PI, false);
-            c.fillStyle = flatcolors[this.color];
-            c.fill();
-            c.drawImage(ball, this.cx - this.r, this.cy - this.r, this.r * 2, this.r * 2);
-        }
+        $(this.div).css("left", this.cx + 'px').css("top", this.cy + 'px').addClass("ball " + this.color);
+        $("#ball-container").append(this.div);
     }
     Ball.prototype.set = function(color, cx, cy) {
         this.color = color;
         this.cx = cx
         this.cy = cy;
     }
-    Ball.prototype.shrink = function(x, y) {
-        if (this.s) {
-            this.enaclick = false;
-            if (this.r > 3)
-                this.r = Math.floor(0.8 * this.r);
-            else {
-                this.r = 3;
-                p.checkNB(x, y);
-            }
+    Ball.prototype.shrink = function(r) {
+        this.r = r;
+        this.translate(0, 0, r);
+        if (this.r == 0) {
+            this.color = 'transparent';
+            var d = $(this.div);
+            setTimeout(function() {
+                d.remove();
+            }, 500);
         }
-    }
-    Ball.prototype.move = function() {
-        var x = (this.dx - 30) / 60;
-        var y = (this.dy - 30) / 60;
-        switch (this.d) {
-            case "left":
-                if (this.cx > this.dx) {
-                    this.cx = this.cx - p.speed > this.dx ? this.cx - p.speed : this.dx;
-                } else {
-                    m[x][y].color = this.color;
-                    m[x][y].cx = this.dx;
-                    m[x][y].cy = this.dy;
-                    m[x][y].r = this.r;
-
-                    this.d = "";
-                    this.color = 'transparent';
-
-                    if (downX == p.gridSize + 2) {
-                        m[p.gridSize + 2][y].color = m[p.gridSize + 3][y].color;
-                        m[p.gridSize + 2][y].cx = 30 + 60 * (p.gridSize + 2);
-                        m[p.gridSize + 2][y].cy = 30 + 60 * y;
-                        m[p.gridSize + 3][y].color = colors[Math.floor((Math.random() * colors.length))];
-                    }
-
-                    p.enaclick = true;
-                    p.checkCombo();
-                }
-                break;
-            case "right":
-                if (this.cx < this.dx) {
-                    this.cx = this.cx + p.speed < this.dx ? this.cx + p.speed : this.dx;
-                } else {
-                    m[x][y].color = this.color;
-                    m[x][y].cx = this.dx;
-                    m[x][y].cy = this.dy;
-                    m[x][y].r = this.r;
-
-                    this.d = "";
-                    this.color = 'transparent';
-
-                    if (downX == 1) {
-                        m[1][y].color = m[0][y].color;
-                        m[1][y].cx = 90;
-                        m[1][y].cy = 30 + 60 * y;
-                        m[0][y].color = colors[Math.floor((Math.random() * colors.length))];
-                    }
-
-                    p.enaclick = true;
-                    p.checkCombo();
-                }
-                break;
-            case "up":
-                if (this.cy > this.dy) {
-                    this.cy = this.cy - p.speed > this.dy ? this.cy - p.speed : this.dy;
-                } else {
-                    m[x][y].color = this.color;
-                    m[x][y].cx = this.dx;
-                    m[x][y].cy = this.dy;
-                    m[x][y].r = this.r;
-
-                    this.d = "";
-                    this.color = 'transparent';
-
-                    if (downY == p.gridSize + 2) {
-                        m[x][p.gridSize + 2].color = m[x][p.gridSize + 3].color;
-                        m[x][p.gridSize + 2].cx = 30 + 60 * x;
-                        m[x][p.gridSize + 2].cy = 30 + 60 * (p.gridSize + 2);
-                        m[x][p.gridSize + 3].color = colors[Math.floor((Math.random() * colors.length))];
-                    }
-
-                    p.enaclick = true;
-                    p.checkCombo();
-                }
-                break;
-            case "down":
-                if (this.cy < this.dy) {
-                    this.cy = this.cy + p.speed < this.dy ? this.cy + p.speed : this.dy;
-                } else {
-                    m[x][y].color = this.color;
-                    m[x][y].cx = this.dx;
-                    m[x][y].cy = this.dy;
-                    m[x][y].r = this.r;
-
-                    this.d = "";
-                    this.color = 'transparent';
-
-                    if (downY == 1) {
-                        m[x][1].color = m[x][0].color;
-                        m[x][1].cx = 30 + 60 * x;
-                        m[x][1].cy = 90;
-                        m[x][0].color = colors[Math.floor((Math.random() * colors.length))];
-                    }
-
-                    p.enaclick = true;
-                    p.checkCombo();
-                }
-                break;
-        }
-
     }
 }());
