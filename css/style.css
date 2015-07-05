@@ -39,18 +39,28 @@ h3{margin:0 0 15px!important}
 #footer iframe{vertical-align:middle}
 #footer div,#footer span{display:inline-block;min-width:85px;float:left}
 #footer .google{width:75px}
-/* #wrapper{max-width:700px} */
 
 #help{
   margin-top:-320px;
   transform: scale(0);
+  -webkit-transform: scale(0);
+  -moz-transform: scale(0);
+  -ms-transform: scale(0);
+  -o-transform: scale(0);
+
   -webkit-transition:all .5s ease-out;
   -moz-transition:all .5s ease-out;
   -ms-transition:all .5s ease-out;
   -o-transition:all .5s ease-out;
   transition:all .5s ease-out;
 }
-.show { transform: scale(1)!important; }
+.show {
+  transform: scale(1)!important;
+  -webkit-transform: scale(1);
+  -moz-transform: scale(1);
+  -ms-transform: scale(1);
+  -o-transform: scale(1);
+}
 .hidden { transform: scale(0)!important; }
 
 #ball-container {
