@@ -1,6 +1,5 @@
 (function() {
 
-    //  var b = document.getElementById('board');
     var bg = document.getElementById('board-bg');
     var game = document.getElementById('layers');
     var cbg = bg.getContext('2d');
@@ -26,7 +25,6 @@
       bc.width(w);
       bc.height(bc.width());
       scale = w * (14 / (p.gridSize + 4)) / 700;
-
       bc.css("transform","scale(" + scale + ")");
       bc.css("-webkit-transform","scale(" + scale + ")");
       bc.css("-moz-transform","scale(" + scale + ")");
@@ -154,7 +152,6 @@
             y = rand(3, this.gridSize);
         }
         m[x][y].set(colors[Math.floor((Math.random() * colors.length))], x * 50, y * 50);
-        m[x][y].r = 1;
     }
 
     Collider.prototype.checkGameOver = function() {
@@ -169,6 +166,7 @@
             this.points += this.hp * 100;
             this.hp = 100;
             this.initBoardBalls();
+            this.drawBoardBalls();
         }
 
         //Ha nincs több lehetőség
@@ -186,7 +184,6 @@
         for (var i = 0; i < this.gridSize + 4; i++)
             for (var j = 0; j < this.gridSize + 4; j++)
                 if (m[i][j].color != 'transparent') {
-                    if (m[i][j].s) m[i][j].shrink(i, j);
                     m[i][j].draw();
                 }
     }
