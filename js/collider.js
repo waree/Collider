@@ -22,7 +22,6 @@
     var combos = $("#combos");
 
     function gScale() {
-      //$("#points").html($(window).height());
       var w = cbg.canvas.clientWidth;
       bc.width(w);
       bc.height(bc.width());
@@ -36,8 +35,9 @@
     }
 
     $(document).ready(function() {
-      init();
-      gScale();
+      var img = new Image();
+      img.src="./images/ball.png";
+      img.onload = init();
     });
 
     $(window).on("resize", function() {
@@ -91,16 +91,15 @@
         p = new Collider($("#board-bg").width() < 400 ? 6 : 10);
         gamestop = true;
         gameover = help = false;
-
         bg.width = bg.height = 700;
         bwidth = Math.floor(bg.width / (p.gridSize + 4));
         hp.css("width", "100%").removeClass("progress-bar-danger progress-bar-warning").addClass("progress-bar-success");
         colorcombo = [];
-
         p.drawBoard();
         p.initBorderBalls();
         p.initBoardBalls();
         p.drawBoardBalls();
+        gScale();
     }
 
     function rand(min, max) {
