@@ -28,6 +28,7 @@
         bc.css("-moz-transform", "scale(" + scale + ")");
         bc.css("-ms-transform", "scale(" + scale + ")");
         bc.css("-o-transform", "scale(" + scale + ")");
+        return;
     }
 
     $(document).ready(function() {
@@ -95,6 +96,7 @@
         p.initBoardBalls();
         p.drawBoardBalls();
         Scale();
+        return;
     }
 
     function rand(min, max) {
@@ -103,7 +105,7 @@
 
     function hpDrain() {
         if (p.hp > 0) {
-            p.hp -= 1;
+            p.hp--;
             hp.css("width", p.hp + "%");
             if (p.hp <= 30 && hp.hasClass("progress-bar-danger")) hp.removeClass("progress-bar-warning progress-bar-success").addClass("progress-bar-danger");
             else if (p.hp > 30 && p.hp <= 60 && hp.hasClass("progress-bar-warning")) hp.removeClass("progress-bar-danger progress-bar-success").addClass("progress-bar-warning");
@@ -113,6 +115,7 @@
             return;
         }
         p.checkGameOver();
+        return;
     }
 
     $("#newgame").click(function() {
