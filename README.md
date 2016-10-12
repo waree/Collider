@@ -1,2 +1,2 @@
 # Collider
-You can try it on http://waree.github.io/Collider/.
+You can try it on http://szilagyinorbi.github.io/Collider/.
